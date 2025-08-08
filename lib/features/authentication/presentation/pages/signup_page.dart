@@ -18,19 +18,13 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (p, c) => p.isOtpSent != c.isOtpSent || p.error != c.error,
+      listenWhen: (p, c) => p.error != c.error || p.user != c.user,
       listener: (context, state) {
         if (state.error != null) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(state.error!)));
-        } else if (state.isOtpSent) {
-          Navigator.pushNamed(context, '/otp', arguments: {
-            'verificationId': state.verificationId,
-            'phone': phoneCtrl.text.trim(),
-            'mode': 'signup',
-            'password': pwdCtrl.text,
-            'displayName': nameCtrl.text.trim(),
-          });
+        } else if (state.user != null) {
+          Navigator.pushNamedAndRemoveUntil(context, '/todos', (_) => false);
         }
       },
       child: Scaffold(
@@ -57,22 +51,23 @@ class _SignupPageState extends State<SignupPage> {
                 decoration: const InputDecoration(labelText: 'Password'),
               ),
               const SizedBox(height: 16),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  return ElevatedButton(
-                    onPressed: state.isLoading
-                        ? null
-                        : () {
-                            final phone = phoneCtrl.text.trim();
-                            context
-                                .read<AuthBloc>()
-                                .add(AuthSendOtpRequested(phone));
-                          },
-                    child:
-                        Text(state.isLoading ? 'Sending OTP...' : 'Send OTP'),
-                  );
-                },
-              ),
+              BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                return ElevatedButton(
+                  onPressed: state.isLoading
+                      ? null
+                      : () {
+                          final phone = phoneCtrl.text.trim();
+                          context.read<AuthBloc>().add(
+                                AuthSignupWithPasswordRequested(
+                                  phone,
+                                  pwdCtrl.text,
+                                  displayName: nameCtrl.text.trim(),
+                                ),
+                              );
+                        },
+                  child: Text(state.isLoading ? 'Creating...' : 'Sign up'),
+                );
+              }),
               TextButton(
                 onPressed: () =>
                     Navigator.pushReplacementNamed(context, '/login'),

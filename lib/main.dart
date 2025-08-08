@@ -7,8 +7,6 @@ import 'features/authentication/application/bloc/auth_bloc.dart';
 import 'features/authentication/application/bloc/auth_event.dart';
 import 'features/authentication/presentation/pages/login_page.dart';
 import 'features/authentication/presentation/pages/signup_page.dart';
-import 'features/authentication/presentation/pages/forgot_password_page.dart';
-import 'features/authentication/presentation/pages/otp_page.dart';
 import 'features/todo/application/bloc/todo_bloc.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/todo/presentation/pages/add_edit_todo_page.dart';
@@ -19,7 +17,6 @@ import 'features/todo/presentation/pages/add_edit_todo_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupInjector();
   runApp(const NotieeApp());
@@ -46,8 +43,6 @@ class NotieeApp extends StatelessWidget {
         routes: {
           '/login': (_) => const LoginPage(),
           '/signup': (_) => const SignupPage(),
-          '/forgot': (_) => const ForgotPasswordPage(),
-          '/otp': (_) => const OtpPage(),
           '/todos': (_) => const TodoListPage(),
           '/add_edit_todo': (_) => const AddEditTodoPage(),
         },
