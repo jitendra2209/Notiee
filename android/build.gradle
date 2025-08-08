@@ -1,3 +1,21 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.2'
+
+    //     // Import the BoM for the Firebase platform
+    //     classpath(platform("com.google.firebase:firebase-bom:34.0.0"))
+
+    // // Add the dependency for the Firebase Authentication library
+    // // When using the BoM, you don't specify versions in Firebase library dependencies
+    //     classpath("com.google.firebase:firebase-auth")
+        
+    }
+}
+
 allprojects {
     repositories {
         google()

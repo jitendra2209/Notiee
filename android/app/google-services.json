@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "851087939729",
+    "project_id": "notiee-1a56a",
+    "storage_bucket": "notiee-1a56a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851087939729:android:d057e94b9bda39b7784730",
+        "android_client_info": {
+          "package_name": "com.example.notiee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm3y3jEpgX1q1wu57ct8J0C097lIdkqTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
