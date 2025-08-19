@@ -5,7 +5,7 @@
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:label="todoapp"
+        android:label="Notiee"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
