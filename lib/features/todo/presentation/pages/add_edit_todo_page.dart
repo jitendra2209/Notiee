@@ -18,21 +18,49 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
   TimeOfDay? selectedReminderTime;
   String selectedPriority = 'Medium';
   TodoModel? existing;
+  bool _isInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final arg = ModalRoute.of(context)!.settings.arguments;
-    if (arg is TodoModel) {
-      existing = arg;
-      titleCtrl.text = existing?.title ?? '';
-      descCtrl.text = existing?.description ?? '';
-      selectedReminderDate = existing?.reminderDate;
-      selectedReminderTime = existing?.reminderTime != null
-          ? TimeOfDay.fromDateTime(existing!.reminderTime!)
-          : null;
-      selectedPriority = existing?.priority ?? 'Medium';
+    if (!_isInitialized) {
+      final arg = ModalRoute.of(context)!.settings.arguments;
+      if (arg is TodoModel) {
+        existing = arg;
+        _initializeFormData();
+      }
+      _isInitialized = true;
     }
+  }
+
+  void _initializeFormData() {
+    if (existing != null) {
+      setState(() {
+        titleCtrl.text = existing!.title ?? '';
+        descCtrl.text = existing!.description ?? '';
+        selectedReminderDate = existing!.reminderDate;
+        selectedReminderTime = existing!.reminderTime != null
+            ? TimeOfDay.fromDateTime(existing!.reminderTime!)
+            : null;
+        selectedPriority = existing!.priority ?? 'Medium';
+      });
+
+      // Debug information - can be removed in production
+      print('DEBUG: Initialized form data');
+      print('Title: ${existing!.title}');
+      print('Reminder Date: ${existing!.reminderDate}');
+      print('Reminder Time: ${existing!.reminderTime}');
+      print('Priority: ${existing!.priority}');
+      print('Selected Date: $selectedReminderDate');
+      print('Selected Time: $selectedReminderTime');
+    }
+  }
+
+  @override
+  void dispose() {
+    titleCtrl.dispose();
+    descCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,7 +88,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
               controller: titleCtrl,
               label: 'Task Title',
               hint: 'Enter your task title',
-              icon: Icons.title,
             ),
             const SizedBox(height: 20),
 
@@ -69,7 +96,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
               controller: descCtrl,
               label: 'Description',
               hint: 'Add some details about your task',
-              icon: Icons.description,
               maxLines: 4,
             ),
             const SizedBox(height: 20),
@@ -94,7 +120,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
     required TextEditingController controller,
     required String label,
     required String hint,
-    required IconData icon,
     int maxLines = 1,
   }) {
     return Column(
@@ -103,7 +128,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -111,7 +136,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade200),
           ),
@@ -120,7 +145,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
             maxLines: maxLines,
             decoration: InputDecoration(
               hintText: hint,
-              prefixIcon: Icon(icon, color: Colors.grey.shade600),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
               hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -138,7 +162,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         const Text(
           'Priority',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -146,14 +170,14 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade200),
           ),
           child: DropdownButtonFormField<String>(
             value: selectedPriority,
             decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.flag, color: Colors.grey),
+              // prefixIcon: Icon(Icons.flag, color: Colors.grey),
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
             ),
@@ -228,7 +252,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         const Text(
           'Reminder',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -242,13 +266,14 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_today, color: Colors.grey.shade600),
+                      Icon(Icons.calendar_month_outlined,
+                          color: Colors.grey.shade600),
                       const SizedBox(width: 12),
                       Text(
                         selectedReminderDate != null
@@ -272,7 +297,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                   ),
@@ -282,7 +307,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
                       const SizedBox(width: 12),
                       Text(
                         selectedReminderTime != null
-                            ? selectedReminderTime!.format(context)
+                            ? _formatTimeWithAmPm(selectedReminderTime!)
                             : 'Select Time',
                         style: TextStyle(
                           color: selectedReminderTime != null
@@ -415,5 +440,12 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
       );
     }
     return null;
+  }
+
+  String _formatTimeWithAmPm(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
   }
 }

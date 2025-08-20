@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notiee/firebase_options.dart';
 import 'core/di/injector.dart';
@@ -10,6 +11,8 @@ import 'features/authentication/presentation/signup_page.dart';
 import 'features/todo/application/bloc/todo_bloc.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/todo/presentation/pages/add_edit_todo_page.dart';
+import 'features/profile/application/bloc/profile_bloc.dart';
+import 'features/profile/presentation/pages/profile_page.dart';
 import 'home.dart';
 import 'splash_screen.dart';
 
@@ -21,6 +24,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupInjector();
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+  ));
   runApp(const NotieeApp());
 }
 
@@ -37,6 +45,9 @@ class NotieeApp extends StatelessWidget {
         BlocProvider<TodoBloc>(
           create: (_) => getIt<TodoBloc>(),
         ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => getIt<ProfileBloc>(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -49,6 +60,7 @@ class NotieeApp extends StatelessWidget {
           '/todos': (_) => const TodoListPage(),
           '/main': (_) => const MainNavigationPage(),
           '/add_edit_todo': (_) => const AddEditTodoPage(),
+          '/profile': (_) => const ProfilePage(),
         },
       ),
     );

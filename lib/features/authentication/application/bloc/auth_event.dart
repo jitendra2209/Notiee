@@ -12,10 +12,11 @@ class AuthSignupWithPasswordRequested extends AuthEvent {
   final String phone;
   final String password;
   final String? displayName;
+  final String? email;
   const AuthSignupWithPasswordRequested(this.phone, this.password,
-      {this.displayName});
+      {this.displayName, this.email});
   @override
-  List<Object?> get props => [phone, password, displayName];
+  List<Object?> get props => [phone, password, displayName, email];
 }
 
 class AuthLoginWithPasswordRequested extends AuthEvent {

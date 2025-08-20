@@ -33,9 +33,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required String phone,
     required String password,
     String? displayName,
+    required String email,
   }) async {
     try {
-      final email = _derivedEmailFromPhone(phone);
+      // final email = _derivedEmailFromPhone(phone);
       final cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -47,6 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
         uid: uid,
         phoneNumber: phone,
         displayName: displayName,
+        email: email,
       );
       if (snap.exists) {
         await docRef.update(user.toJson());

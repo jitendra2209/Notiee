@@ -26,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       phone: e.phone,
       password: e.password,
       displayName: e.displayName,
+      email: e.email ?? '',
     );
     res.fold(
       (l) => emit(state.copyWith(isLoading: false, error: l.message)),

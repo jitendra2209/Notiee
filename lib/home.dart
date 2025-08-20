@@ -40,17 +40,20 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         ),
         actionsPadding: const EdgeInsets.only(right: 10),
         actions: [
-          Container(
-            width: 35,
-            height: 35,
-            decoration: BoxDecoration(
-              color: Colors.redAccent.shade100,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.account_circle_outlined,
-              color: Colors.white,
-              size: 25,
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/profile'),
+            child: Container(
+              width: 35,
+              height: 35,
+              decoration: BoxDecoration(
+                color: Colors.redAccent.shade100,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.account_circle_outlined,
+                color: Colors.white,
+                size: 25,
+              ),
             ),
           ),
           // IconButton(
@@ -68,16 +71,18 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         ],
       ),
       body: _pages[_selectedIndex],
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => Navigator.pushNamed(context, '/add_edit_todo'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.redAccent.shade100,
-        elevation: 4,
-        child: const Icon(
-          Icons.add,
-          size: 28,
-        ),
-      ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.small(
+              onPressed: () => Navigator.pushNamed(context, '/add_edit_todo'),
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.redAccent.shade100,
+              elevation: 4,
+              child: const Icon(
+                Icons.add,
+                size: 28,
+              ),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: SafeArea(
         child: Container(

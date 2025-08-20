@@ -8,6 +8,7 @@ abstract class AuthRepository {
     required String phone,
     required String password,
     String? displayName,
+    required String email,
   });
   Future<Either<Failure, Unit>> loginWithPassword({
     required String phone,

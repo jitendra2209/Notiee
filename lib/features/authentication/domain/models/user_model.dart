@@ -6,6 +6,7 @@ class AppUser extends Equatable {
   final String? displayName;
   final String? passwordHash;
   final String? salt;
+  final String? email;
 
   const AppUser({
     this.uid,
@@ -13,6 +14,7 @@ class AppUser extends Equatable {
     this.displayName,
     this.passwordHash,
     this.salt,
+    this.email,
   });
 
   AppUser copyWith({
@@ -21,6 +23,7 @@ class AppUser extends Equatable {
     String? displayName,
     String? passwordHash,
     String? salt,
+    String? email,
   }) {
     return AppUser(
       uid: uid ?? this.uid,
@@ -28,6 +31,7 @@ class AppUser extends Equatable {
       displayName: displayName ?? this.displayName,
       passwordHash: passwordHash ?? this.passwordHash,
       salt: salt ?? this.salt,
+      email: email ?? this.email,
     );
   }
 
@@ -38,6 +42,7 @@ class AppUser extends Equatable {
       'displayName': displayName,
       'passwordHash': passwordHash,
       'salt': salt,
+      'email': email,
     };
   }
 
@@ -48,10 +53,11 @@ class AppUser extends Equatable {
       displayName: json['displayName'] as String?,
       passwordHash: json['passwordHash'] as String?,
       salt: json['salt'] as String?,
+      email: json['email'] as String?,
     );
   }
 
   @override
   List<Object?> get props =>
-      [uid, phoneNumber, displayName, passwordHash, salt];
+      [uid, phoneNumber, displayName, passwordHash, salt, email];
 }
