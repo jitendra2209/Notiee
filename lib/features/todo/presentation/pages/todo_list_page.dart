@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/icon_path.dart';
 import '../../application/bloc/todo_bloc.dart';
 import '../../application/bloc/todo_event.dart';
 import '../../application/bloc/todo_state.dart';
-import '../../../authentication/application/bloc/auth_bloc.dart';
-import '../../../authentication/application/bloc/auth_event.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({super.key});
@@ -22,70 +21,178 @@ class _TodoListPageState extends State<TodoListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Todos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthBloc>().add(AuthSignOutRequested());
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/login', (_) => false);
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<TodoBloc, TodoState>(
-        builder: (context, state) {
-          if (state.isLoading)
-            return const Center(child: CircularProgressIndicator());
-          if (state.todos.isEmpty)
-            return const Center(child: Text('No todos yet'));
-          return ListView.separated(
-            itemCount: state.todos.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final t = state.todos[index];
-              return ListTile(
-                leading: CircleAvatar(child: Text('${index + 1}')),
-                title: Text(t.title ?? ''),
-                subtitle: Text(t.description ?? ''),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
+    return Scaffold(body: BlocBuilder<TodoBloc, TodoState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state.todos.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(IconPath.empty, width: 100, height: 100),
+                const Text(
+                  'No Tasks Yet...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Text(
+                  'Click on the + button to add a task',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.only(bottom: 100),
+          itemCount: state.todos.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final t = state.todos[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Checkbox(
-                      value: t.isCompleted ?? false,
-                      onChanged: (v) {
-                        context.read<TodoBloc>().add(TodoUpdateRequested(
-                              t.copyWith(isCompleted: v ?? false),
-                            ));
-                      },
+                    Row(
+                      children: [
+                        // Priority indicator
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: _getPriorityColor(t.priority),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            t.title ?? '',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: (t.isCompleted ?? false)
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: (t.isCompleted ?? false)
+                                  ? Colors.grey
+                                  : Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Checkbox(
+                          value: t.isCompleted ?? false,
+                          activeColor: Colors.redAccent.shade100,
+                          onChanged: (v) {
+                            context.read<TodoBloc>().add(TodoUpdateRequested(
+                                  t.copyWith(isCompleted: v ?? false),
+                                ));
+                          },
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => Navigator.pushNamed(
-                          context, '/add_edit_todo',
-                          arguments: t),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => context
-                          .read<TodoBloc>()
-                          .add(TodoDeleteRequested(t.id!)),
+                    if (t.description?.isNotEmpty == true) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        t.description!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: (t.isCompleted ?? false)
+                              ? Colors.grey
+                              : Colors.grey.shade600,
+                          decoration: (t.isCompleted ?? false)
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        // Priority label
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color:
+                                _getPriorityColor(t.priority).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            t.priority ?? 'Medium',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _getPriorityColor(t.priority),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Reminder indicator
+                        if (t.reminderDate != null) ...[
+                          Icon(
+                            Icons.notifications_outlined,
+                            size: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${t.reminderDate!.day}/${t.reminderDate!.month}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                        const Spacer(),
+                        // Action buttons
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 20),
+                          onPressed: () => Navigator.pushNamed(
+                              context, '/add_edit_todo',
+                              arguments: t),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              size: 20, color: Colors.red),
+                          onPressed: () => context
+                              .read<TodoBloc>()
+                              .add(TodoDeleteRequested(t.id!)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushNamed(context, '/add_edit_todo'),
-        label: const Text('Add Todo'),
-        icon: const Icon(Icons.add),
-      ),
-    );
+              ),
+            );
+          },
+        );
+      },
+    ));
+  }
+
+  Color _getPriorityColor(String? priority) {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.orange; // Default to medium
+    }
   }
 }

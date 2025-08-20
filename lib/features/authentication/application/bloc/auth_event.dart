@@ -26,4 +26,11 @@ class AuthLoginWithPasswordRequested extends AuthEvent {
   List<Object?> get props => [phone, password];
 }
 
-class AuthSignOutRequested extends AuthEvent {}
+class AuthSignOutRequested extends AuthEvent {
+  final Function() onSuccess;
+  final Function() onFailure;
+  const AuthSignOutRequested(
+      {required this.onSuccess, required this.onFailure});
+  @override
+  List<Object?> get props => [onSuccess, onFailure];
+}

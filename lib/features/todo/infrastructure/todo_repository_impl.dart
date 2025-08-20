@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/models/todo_model.dart';
-import '../../domain/repositories/todo_repository.dart';
+import '../../../core/errors/failures.dart';
+import '../domain/models/todo_model.dart';
+import '../domain/repositories/todo_repository.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
   final FirebaseAuth _auth;
@@ -51,7 +51,7 @@ class TodoRepositoryImpl implements TodoRepository {
   Future<Either<Failure, Unit>> updateTodo(TodoModel todo) async {
     try {
       final uid = _uidOrThrow();
-      if (todo.id == null) return left(UnexpectedFailure('Missing id'));
+      if (todo.id == null) return left(const UnexpectedFailure('Missing id'));
       await _col(uid)
           .doc(todo.id)
           .update(todo.copyWith(updatedAt: DateTime.now()).toJson());

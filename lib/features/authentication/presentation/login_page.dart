@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(state.error!)));
         } else if (state.user != null) {
-          Navigator.pushReplacementNamed(context, '/todos');
+          Navigator.pushReplacementNamed(context, '/main');
         }
       },
       child: Scaffold(

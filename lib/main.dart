@@ -10,6 +10,8 @@ import 'features/authentication/presentation/signup_page.dart';
 import 'features/todo/application/bloc/todo_bloc.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/todo/presentation/pages/add_edit_todo_page.dart';
+import 'home.dart';
+import 'splash_screen.dart';
 
 // ignore: unused_import
 // After running `flutterfire configure`, you can import generated options:
@@ -39,11 +41,13 @@ class NotieeApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-        initialRoute: '/login',
+        initialRoute: '/',
         routes: {
+          '/': (_) => const SplashScreen(),
           '/login': (_) => const LoginPage(),
           '/signup': (_) => const SignupPage(),
           '/todos': (_) => const TodoListPage(),
+          '/main': (_) => const MainNavigationPage(),
           '/add_edit_todo': (_) => const AddEditTodoPage(),
         },
       ),

@@ -48,5 +48,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthSignOutRequested e, Emitter<AuthState> emit) async {
     await _repo.signOut();
     emit(const AuthState());
+    e.onSuccess();
   }
 }

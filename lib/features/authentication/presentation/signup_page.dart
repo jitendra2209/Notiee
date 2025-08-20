@@ -35,7 +35,7 @@ class _SignupPageState extends State<SignupPage> {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(state.error!)));
         } else if (state.user != null) {
-          Navigator.pushNamedAndRemoveUntil(context, '/todos', (_) => false);
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
         }
       },
       child: Scaffold(

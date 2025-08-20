@@ -8,17 +8,17 @@ abstract class Failure extends Equatable {
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure(String m) : super(m);
+  const NetworkFailure(super.m);
 }
 
 class AuthFailure extends Failure {
-  const AuthFailure(String m) : super(m);
+  const AuthFailure(super.m);
 }
 
 class NotFoundFailure extends Failure {
-  const NotFoundFailure(String m) : super(m);
+  const NotFoundFailure(super.m);
 }
 
 class UnexpectedFailure extends Failure {
-  const UnexpectedFailure(String m) : super(m);
+  const UnexpectedFailure(super.m);
 }

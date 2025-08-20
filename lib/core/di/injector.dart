@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../features/authentication/domain/repositories/auth_repository.dart';
 import '../../features/authentication/infrastructure/auth_repository_impl.dart';
 import '../../features/todo/domain/repositories/todo_repository.dart';
-import '../../features/todo/infrastructure/repositories/todo_repository_impl.dart';
+import '../../features/todo/infrastructure/todo_repository_impl.dart';
 import '../../features/authentication/application/bloc/auth_bloc.dart';
 import '../../features/todo/application/bloc/todo_bloc.dart';
 
