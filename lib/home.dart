@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:notiee/core/utils/icon_path.dart';
-import 'features/authentication/application/bloc/auth_bloc.dart';
-import 'features/authentication/application/bloc/auth_event.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 
 class MainNavigationPage extends StatefulWidget {

@@ -7,7 +7,8 @@
     <application
         android:label="Notiee"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/new_icon"
+        android:roundIcon="@mipmap/new_icon_round">
         <activity
             android:name="com.example.notiee.MainActivity"
             android:exported="true"

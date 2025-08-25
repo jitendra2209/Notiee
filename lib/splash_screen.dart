@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/icon_path.dart';
 
 import 'features/authentication/application/bloc/auth_bloc.dart';
 import 'features/authentication/application/bloc/auth_state.dart';
@@ -66,13 +67,13 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToNextScreen() {
     final authState = context.read<AuthBloc>().state;
 
-    if (authState.user != null) {
-      // User is logged in, go to main navigation
-      Navigator.pushReplacementNamed(context, '/main');
-    } else {
-      // User is not logged in, go to login
-      Navigator.pushReplacementNamed(context, '/login');
-    }
+    // if (authState.user != null) {
+    //   // User is logged in, go to main navigation
+    //   Navigator.pushReplacementNamed(context, '/main');
+    // } else {
+    //   // User is not logged in, go to login
+    //   Navigator.pushReplacementNamed(context, '/login');
+    // }
   }
 
   @override
@@ -102,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen>
                     return Transform.scale(
                       scale: _scaleAnimation.value,
                       child: Image.asset(
-                        'assets/logo/logo.png',
+                        IconPath.logo,
                         height: 140,
                         width: 140,
                       ),
