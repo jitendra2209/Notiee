@@ -9,8 +9,11 @@ import 'features/authentication/application/bloc/auth_event.dart';
 import 'features/authentication/presentation/login_page.dart';
 import 'features/authentication/presentation/signup_page.dart';
 import 'features/todo/application/bloc/todo_bloc.dart';
+import 'features/todo/application/bloc/note_bloc.dart';
+import 'features/todo/domain/models/note_model.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/todo/presentation/pages/add_edit_todo_page.dart';
+import 'features/todo/presentation/pages/add_edit_note_page.dart';
 import 'features/profile/application/bloc/profile_bloc.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
 import 'home.dart';
@@ -45,6 +48,9 @@ class NotieeApp extends StatelessWidget {
         BlocProvider<TodoBloc>(
           create: (_) => getIt<TodoBloc>(),
         ),
+        BlocProvider<NoteBloc>(
+          create: (_) => getIt<NoteBloc>(),
+        ),
         BlocProvider<ProfileBloc>(
           create: (_) => getIt<ProfileBloc>(),
         ),
@@ -60,6 +66,10 @@ class NotieeApp extends StatelessWidget {
           '/todos': (_) => const TodoListPage(),
           '/main': (_) => const MainNavigationPage(),
           '/add_edit_todo': (_) => const AddEditTodoPage(),
+          '/add_edit_note': (context) {
+            final note = ModalRoute.of(context)?.settings.arguments;
+            return AddEditNotePage(note: note as NoteModel?);
+          },
           '/profile': (_) => const ProfilePage(),
         },
       ),

@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../application/bloc/todo_bloc.dart';
 import '../../application/bloc/todo_event.dart';
 import '../../application/bloc/todo_state.dart';
+import '../../application/bloc/note_bloc.dart';
+import '../../application/bloc/note_event.dart';
+import '../../application/bloc/note_state.dart';
+import '../widgets/notes_list_content.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({super.key});
@@ -18,8 +22,15 @@ class _TodoListPageState extends State<TodoListPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     context.read<TodoBloc>().add(TodoWatchRequested());
+
+    // Delay note initialization to ensure authentication is complete
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        context.read<NoteBloc>().add(NoteWatchRequested());
+      }
+    });
   }
 
   @override
@@ -61,6 +72,7 @@ class _TodoListPageState extends State<TodoListPage>
               tabs: const [
                 Tab(text: 'Ongoing'),
                 Tab(text: 'Completed'),
+                Tab(text: 'Notes'),
               ],
             ),
           ),
@@ -86,6 +98,15 @@ class _TodoListPageState extends State<TodoListPage>
                     _buildTodoList(ongoingTodos, isCompleted: false),
                     // Completed Tab
                     _buildTodoList(completedTodos, isCompleted: true),
+                    // Notes Tab
+                    BlocBuilder<NoteBloc, NoteState>(
+                      builder: (context, noteState) {
+                        return NotesListContent(
+                          notes: noteState.notes,
+                          isLoading: noteState.isLoading,
+                        );
+                      },
+                    ),
                   ],
                 );
               },

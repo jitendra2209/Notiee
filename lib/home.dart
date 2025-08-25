@@ -68,18 +68,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         ],
       ),
       body: _pages[_selectedIndex],
-      floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton.small(
-              onPressed: () => Navigator.pushNamed(context, '/add_edit_todo'),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.redAccent.shade100,
-              elevation: 4,
-              child: const Icon(
-                Icons.add,
-                size: 28,
-              ),
-            )
-          : null,
+      floatingActionButton:
+          _selectedIndex == 0 ? _buildFloatingActionButton(context) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: SafeArea(
         child: Container(
@@ -119,6 +109,50 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       default:
         return 'Home';
     }
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        if (value == 'todo') {
+          Navigator.pushNamed(context, '/add_edit_todo');
+        } else if (value == 'note') {
+          Navigator.pushNamed(context, '/add_edit_note');
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'todo',
+          child: Row(
+            children: [
+              Icon(Icons.task_alt, size: 20),
+              SizedBox(width: 8),
+              Text('Add Todo'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'note',
+          child: Row(
+            children: [
+              Icon(Icons.note_add, size: 20),
+              SizedBox(width: 8),
+              Text('Add Note'),
+            ],
+          ),
+        ),
+      ],
+      child: FloatingActionButton.small(
+        onPressed: null, // This will be handled by PopupMenuButton
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.redAccent.shade100,
+        elevation: 4,
+        child: const Icon(
+          Icons.add,
+          size: 28,
+        ),
+      ),
+    );
   }
 
   Widget _buildNavItem({
