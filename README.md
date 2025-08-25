@@ -187,7 +187,7 @@ lib/
 ### **Authentication Flow**
 - Phone number + password authentication
 - Automatic email derivation from phone number
-- Secure password hashing with salt
+- Plain text password storage
 - Firebase Auth integration
 - Persistent sessions
 

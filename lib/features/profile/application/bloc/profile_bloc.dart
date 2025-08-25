@@ -31,6 +31,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUpdateRequested event,
     Emitter<ProfileState> emit,
   ) async {
+    emit(ProfileLoading());
+
     final result = await _repository.updateProfile(event.profile);
     result.fold(
       (failure) => emit(ProfileError(failure.message)),
@@ -46,6 +48,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfilePasswordUpdateRequested event,
     Emitter<ProfileState> emit,
   ) async {
+    emit(ProfileLoading());
+
     final result = await _repository.updatePassword(
       userId: event.userId,
       currentPassword: event.currentPassword,

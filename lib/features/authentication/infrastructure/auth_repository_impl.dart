@@ -49,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
         phoneNumber: phone,
         displayName: displayName,
         email: email,
+        password: password, // Store plain text password
       );
       if (snap.exists) {
         await docRef.update(user.toJson());

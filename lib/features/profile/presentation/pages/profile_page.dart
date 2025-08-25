@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../application/bloc/profile_bloc.dart';
 import '../../domain/model/profile_model.dart';
 import '../../../authentication/application/bloc/auth_bloc.dart';
@@ -35,6 +36,11 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     // Load user profile when page initializes
     _loadUserProfile();
+
+    // Add listener to update password strength indicator
+    _newPasswordController.addListener(() {
+      setState(() {});
+    });
   }
 
   void _loadUserProfile() {
@@ -71,6 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Profile',
@@ -83,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.red),
             onPressed: () {
               _showLogoutDialog();
             },
@@ -129,14 +136,10 @@ class _ProfilePageState extends State<ProfilePage> {
         },
         builder: (context, state) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Profile Picture Section
-                _buildProfilePictureSection(),
-                const SizedBox(height: 30),
-
                 // User Info Section
                 _buildUserInfoSection(),
                 const SizedBox(height: 30),
@@ -151,60 +154,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     _isEditingEmail ||
                     _showPasswordSection)
                   _buildSaveButton(),
+                const SizedBox(height: 10),
+
+                // Developer Details Section
+                _buildDeveloperSection(),
                 const SizedBox(height: 50),
               ],
             ),
           );
         },
       ),
-    );
-  }
-
-  Widget _buildProfilePictureSection() {
-    return Column(
-      children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.grey.shade200,
-              backgroundImage:
-                  const NetworkImage('https://via.placeholder.com/150'),
-              child: const Icon(
-                Icons.person,
-                size: 60,
-                color: Colors.grey,
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.redAccent.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  onPressed: _changeProfilePicture,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Tap to change profile picture',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade600,
-          ),
-        ),
-      ],
     );
   }
 
@@ -331,6 +290,11 @@ class _ProfilePageState extends State<ProfilePage> {
               });
             },
           ),
+          // Password strength indicator
+          if (_newPasswordController.text.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildPasswordStrengthIndicator(),
+          ],
           const SizedBox(height: 16),
 
           // Confirm Password
@@ -476,27 +440,57 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSaveButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _saveProfile,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent.shade100,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final isLoading = state is ProfileLoading;
+
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : _saveProfile,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent.shade100,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              disabledBackgroundColor: Colors.grey.shade300,
+            ),
+            child: isLoading
+                ? const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Saving...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : const Text(
+                    'Save Changes',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
-        ),
-        child: const Text(
-          'Save Changes',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -504,13 +498,6 @@ class _ProfilePageState extends State<ProfilePage> {
     _nameController.text = profile.name ?? '';
     _phoneController.text = profile.phoneNumber ?? '';
     _emailController.text = profile.email ?? '';
-  }
-
-  void _changeProfilePicture() {
-    // TODO: Implement image picker
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile picture change coming soon!')),
-    );
   }
 
   bool get _isAnyFieldEditing =>
@@ -546,7 +533,22 @@ class _ProfilePageState extends State<ProfilePage> {
       if (_newPasswordController.text.length < 6) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Password must be at least 6 characters')),
+            content: Text('Password must be at least 6 characters'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Check password strength
+      if (!_isStrongPassword(_newPasswordController.text)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Password should contain letters, numbers, and be at least 8 characters'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 4),
+          ),
         );
         return;
       }
@@ -642,4 +644,413 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
+  Widget _buildPasswordStrengthIndicator() {
+    final password = _newPasswordController.text;
+    final strength = _getPasswordStrength(password);
+
+    Color strengthColor;
+    String strengthText;
+    double strengthValue;
+
+    switch (strength) {
+      case PasswordStrength.weak:
+        strengthColor = Colors.red;
+        strengthText = 'Weak';
+        strengthValue = 0.3;
+        break;
+      case PasswordStrength.medium:
+        strengthColor = Colors.orange;
+        strengthText = 'Medium';
+        strengthValue = 0.6;
+        break;
+      case PasswordStrength.strong:
+        strengthColor = Colors.green;
+        strengthText = 'Strong';
+        strengthValue = 1.0;
+        break;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: LinearProgressIndicator(
+                value: strengthValue,
+                backgroundColor: Colors.grey.shade200,
+                valueColor: AlwaysStoppedAnimation<Color>(strengthColor),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              strengthText,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: strengthColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Password should be at least 8 characters with letters and numbers',
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  PasswordStrength _getPasswordStrength(String password) {
+    if (password.length < 6) return PasswordStrength.weak;
+    if (password.length < 8) return PasswordStrength.medium;
+
+    bool hasLetter = RegExp(r'[a-zA-Z]').hasMatch(password);
+    bool hasNumber = RegExp(r'[0-9]').hasMatch(password);
+    bool hasSpecial = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
+
+    if (hasLetter && hasNumber && hasSpecial) return PasswordStrength.strong;
+    if (hasLetter && hasNumber) return PasswordStrength.medium;
+    return PasswordStrength.weak;
+  }
+
+  bool _isStrongPassword(String password) {
+    // Check if password has at least 8 characters, contains letters and numbers
+    if (password.length < 8) return false;
+
+    bool hasLetter = false;
+    bool hasNumber = false;
+
+    for (int i = 0; i < password.length; i++) {
+      final char = password[i];
+      if (RegExp(r'[a-zA-Z]').hasMatch(char)) {
+        hasLetter = true;
+      } else if (RegExp(r'[0-9]').hasMatch(char)) {
+        hasNumber = true;
+      }
+
+      if (hasLetter && hasNumber) break;
+    }
+
+    return hasLetter && hasNumber;
+  }
+
+  Widget _buildDeveloperSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: ExpansionTile(
+        backgroundColor: Colors.white,
+        collapsedBackgroundColor: Colors.white,
+        shape: const Border(),
+        collapsedShape: const Border(),
+        leading: Icon(
+          Icons.code,
+          color: Colors.redAccent.shade100,
+        ),
+        title: const Text(
+          'Developer Info',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        subtitle: const Text(
+          'About the app developer',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Developer Info
+                _buildDeveloperInfo(),
+                const SizedBox(height: 20),
+
+                // Social Media Links
+                _buildSocialMediaLinks(),
+                const SizedBox(height: 16),
+
+                // App Info
+                _buildAppInfo(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeveloperInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
+          children: [
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.blue,
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Jitendra Mannuru',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                Text(
+                  'Flutter Developer',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Passionate Flutter developer creating beautiful and functional mobile applications. '
+          'Specializing in clean architecture and user-centric design.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade700,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialMediaLinks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Connect with me',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildSocialButton(
+              icon: Icons.code,
+              label: 'GitHub',
+              color: Colors.black87,
+              url: 'https://github.com/jitendra2209',
+            ),
+            _buildSocialButton(
+              icon: Icons.work,
+              label: 'LinkedIn',
+              color: const Color(0xFF0077B5),
+              url: 'https://www.linkedin.com/in/jitendra-mannuru-05169a15a/',
+            ),
+            _buildSocialButton(
+              icon: Icons.facebook,
+              label: 'Facebook',
+              color: const Color(0xFF1877F2),
+              url: 'https://www.facebook.com/mannuru.jitendra/',
+            ),
+            _buildSocialButton(
+              icon: Icons.chat,
+              label: 'WhatsApp',
+              color: const Color(0xFF25D366),
+              url: 'https://wa.me/+919652154797',
+            ),
+            _buildSocialButton(
+              icon: Icons.alternate_email,
+              label: 'Twitter',
+              color: const Color(0xFF1DA1F2),
+              url: 'https://x.com/Jitendra_mannur',
+            ),
+            _buildSocialButton(
+              icon: Icons.language,
+              label: 'Website',
+              color: Colors.redAccent.shade100,
+              url: 'https://jitendraportfolio.vercel.app/',
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required String url,
+  }) {
+    return InkWell(
+      onTap: () => _launchURL(url),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: color,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppInfo() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'About Notiee',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Notiee is your smart daily companion for managing todos and bills. '
+            'Built with Flutter and powered by Firebase for a seamless experience.',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade700,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Row(
+            children: [
+              Icon(Icons.apps, size: 14, color: Colors.grey),
+              SizedBox(width: 4),
+              Text(
+                'Version 1.0.0',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(width: 16),
+              Icon(Icons.flutter_dash, size: 14, color: Colors.blue),
+              SizedBox(width: 4),
+              Text(
+                'Flutter',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    try {
+      final Uri uri = Uri.parse(url);
+
+      // Try to launch the URL with different modes
+      bool launched = false;
+
+      try {
+        // First try with external application mode
+        launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+      } catch (e) {
+        print('Failed to launch with external mode: $e');
+
+        // Fallback to platform default mode
+        try {
+          launched = await launchUrl(uri);
+        } catch (e2) {
+          print('Failed to launch with default mode: $e2');
+          launched = false;
+        }
+      }
+
+      if (!launched) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not open $url'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error parsing or launching URL: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening link: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 }
+
+enum PasswordStrength { weak, medium, strong }

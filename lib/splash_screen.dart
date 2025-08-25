@@ -67,13 +67,13 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToNextScreen() {
     final authState = context.read<AuthBloc>().state;
 
-    // if (authState.user != null) {
-    //   // User is logged in, go to main navigation
-    //   Navigator.pushReplacementNamed(context, '/main');
-    // } else {
-    //   // User is not logged in, go to login
-    //   Navigator.pushReplacementNamed(context, '/login');
-    // }
+    if (authState.user != null) {
+      // User is logged in, go to main navigation
+      Navigator.pushReplacementNamed(context, '/main');
+    } else {
+      // User is not logged in, go to login
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override
@@ -121,13 +121,12 @@ class _SplashScreenState extends State<SplashScreen>
                       opacity: _fadeAnimation.value,
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             'Notiee',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
-                              letterSpacing: 1.2,
+                              color: Colors.redAccent.shade100,
                             ),
                           ),
                           const SizedBox(height: 8),

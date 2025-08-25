@@ -77,8 +77,14 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
       await user.reauthenticateWithCredential(credential);
 
-      // Update password
+      // Update password in Firebase Auth
       await user.updatePassword(newPassword);
+
+      // Update password in Firestore (plain text as requested)
+      await _users.doc(userId).update({
+        'password': newPassword,
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
 
       return right(unit);
     } on FirebaseAuthException catch (e) {
