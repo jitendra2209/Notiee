@@ -64,44 +64,45 @@ class NotesListContent extends StatelessWidget {
         if (pinnedNotes.isNotEmpty) ...[
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(14, 8, 16, 8),
               child: Row(
                 children: [
                   Icon(Icons.push_pin, size: 16, color: Colors.grey.shade600),
                   const SizedBox(width: 4),
-                  Text(
+                  const Text(
                     'Pinned',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildNoteCard(context, pinnedNotes[index]),
-              childCount: pinnedNotes.length,
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => _buildNoteCard(context, pinnedNotes[index]),
+                childCount: pinnedNotes.length,
+              ),
             ),
           ),
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: EdgeInsets.fromLTRB(14, 16, 16, 8),
               child: Text(
                 'Others',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
                 ),
               ),
             ),
@@ -109,7 +110,7 @@ class NotesListContent extends StatelessWidget {
         ],
         // Regular notes section
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -137,12 +138,13 @@ class NotesListContent extends StatelessWidget {
         '/add_edit_note',
         arguments: note,
       ),
-      child: Card(
-        color: color.withOpacity(0.1),
-        elevation: 2,
-        shape: RoundedRectangleBorder(
+      child: Container(
+        // margin: const EdgeInsets.only(left: 6),
+        decoration: BoxDecoration(
+          color: note.isPinned == true ? color.withOpacity(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: color.withOpacity(0.3), width: 1),
+          border: Border.all(
+              color: note.isPinned == true ? color : Colors.blueGrey),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -323,7 +325,7 @@ class NotesListContent extends StatelessWidget {
       case 'red':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Colors.white;
     }
   }
 

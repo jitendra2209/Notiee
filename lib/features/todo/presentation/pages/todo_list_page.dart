@@ -157,150 +157,158 @@ class _TodoListPageState extends State<TodoListPage>
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final t = todos[index];
-        return Card(
+        return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          decoration: BoxDecoration(
+            color: _getPriorityColor(t.priority),
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    // Priority indicator
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: _getPriorityColor(t.priority),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        t.title ?? '',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          decoration:
-                              isCompleted ? TextDecoration.lineThrough : null,
-                          color: isCompleted ? Colors.grey : Colors.black87,
+          child: Container(
+            margin: const EdgeInsets.only(left: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      // Priority indicator
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: _getPriorityColor(t.priority),
+                          shape: BoxShape.circle,
                         ),
                       ),
-                    ),
-                    Checkbox(
-                      value: t.isCompleted ?? false,
-                      activeColor: Colors.redAccent.shade100,
-                      onChanged: (v) {
-                        context.read<TodoBloc>().add(TodoUpdateRequested(
-                              t.copyWith(isCompleted: v ?? false),
-                            ));
-                      },
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          t.title ?? '',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            decoration:
+                                isCompleted ? TextDecoration.lineThrough : null,
+                            color: isCompleted ? Colors.grey : Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Checkbox(
+                        value: t.isCompleted ?? false,
+                        activeColor: Colors.redAccent.shade100,
+                        onChanged: (v) {
+                          context.read<TodoBloc>().add(TodoUpdateRequested(
+                                t.copyWith(isCompleted: v ?? false),
+                              ));
+                        },
+                      ),
+                    ],
+                  ),
+                  if (t.description?.isNotEmpty == true) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      t.description!,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isCompleted ? Colors.grey : Colors.grey.shade600,
+                        decoration:
+                            isCompleted ? TextDecoration.lineThrough : null,
+                      ),
                     ),
                   ],
-                ),
-                if (t.description?.isNotEmpty == true) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    t.description!,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isCompleted ? Colors.grey : Colors.grey.shade600,
-                      decoration:
-                          isCompleted ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    // Priority label
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _getPriorityColor(t.priority).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        t.priority ?? 'Medium',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _getPriorityColor(t.priority),
-                          fontWeight: FontWeight.w500,
+                  // const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      // Priority label
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _getPriorityColor(t.priority).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          t.priority ?? 'Medium',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _getPriorityColor(t.priority),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Reminder indicator
-                    if (t.reminderDate != null) ...[
-                      Icon(
-                        Icons.notifications_outlined,
-                        size: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${t.reminderDate!.day}/${t.reminderDate!.month}',
-                        style: TextStyle(
-                          fontSize: 12,
+                      const SizedBox(width: 8),
+                      // Reminder indicator
+                      if (t.reminderDate != null) ...[
+                        Icon(
+                          Icons.notifications_outlined,
+                          size: 16,
                           color: Colors.grey.shade600,
                         ),
-                      ),
-                    ],
-                    // Completed timestamp for completed tasks
-                    if (isCompleted && t.updatedAt != null) ...[
-                      Icon(
-                        Icons.check_circle_outline,
-                        size: 16,
-                        color: Colors.green.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Completed ${t.updatedAt!.day}/${t.updatedAt!.month}',
-                        style: TextStyle(
-                          fontSize: 12,
+                        const SizedBox(width: 4),
+                        Text(
+                          '${t.reminderDate!.day}/${t.reminderDate!.month}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 8),
+                      // Completed timestamp for completed tasks
+                      if (isCompleted && t.updatedAt != null) ...[
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 16,
                           color: Colors.green.shade600,
                         ),
-                      ),
-                    ],
-                    const Spacer(),
-                    // Action buttons
-                    if (!isCompleted) ...[
+                        const SizedBox(width: 4),
+                        Text(
+                          'Completed on ${t.updatedAt!.day}/${t.updatedAt!.month}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.green.shade600,
+                          ),
+                        ),
+                      ],
+                      const Spacer(),
+                      // Action buttons
+                      if (!isCompleted) ...[
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 20),
+                          onPressed: () => Navigator.pushNamed(
+                              context, '/add_edit_todo',
+                              arguments: t),
+                        ),
+                      ],
                       IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 20),
-                        onPressed: () => Navigator.pushNamed(
-                            context, '/add_edit_todo',
-                            arguments: t),
+                        icon: Icon(
+                          isCompleted ? Icons.restore : Icons.delete_outline,
+                          size: 20,
+                          color: isCompleted ? Colors.blue : Colors.red,
+                        ),
+                        onPressed: () {
+                          if (isCompleted) {
+                            // Restore to ongoing
+                            context.read<TodoBloc>().add(TodoUpdateRequested(
+                                  t.copyWith(isCompleted: false),
+                                ));
+                          } else {
+                            // Delete task
+                            context
+                                .read<TodoBloc>()
+                                .add(TodoDeleteRequested(t.id!));
+                          }
+                        },
                       ),
                     ],
-                    IconButton(
-                      icon: Icon(
-                        isCompleted ? Icons.restore : Icons.delete_outline,
-                        size: 20,
-                        color: isCompleted ? Colors.blue : Colors.red,
-                      ),
-                      onPressed: () {
-                        if (isCompleted) {
-                          // Restore to ongoing
-                          context.read<TodoBloc>().add(TodoUpdateRequested(
-                                t.copyWith(isCompleted: false),
-                              ));
-                        } else {
-                          // Delete task
-                          context
-                              .read<TodoBloc>()
-                              .add(TodoDeleteRequested(t.id!));
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
