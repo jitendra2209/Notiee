@@ -1,19 +1,69 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own user document
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // Users can read and write their own todos
-    match /users/{userId}/todos/{todoId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Allow users to create their initial profile document
+    // Users collection - users can read and write their own document
     match /users/{userId} {
-      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can read and write their own todos (subcollection)
+      match /todos/{todoId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Users can read and write their own notes (subcollection)  
+      match /notes/{noteId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Global todos collection (if used)
+    match /todos/{todoId} {
+      allow read, write: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Global notes collection (if used)
+    match /notes/{noteId} {
+      allow read, write: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Groups collection for bill splitting feature
+    match /groups/{groupId} {
+      // Allow reading groups for authenticated users
+      // Note: Fine-grained access control is handled in the app layer
+      // using Firestore queries with where clauses for member phone numbers
+      allow read: if isAuthenticated();
+      
+      // Allow creating groups if user is authenticated and is the creator
+      allow create: if isAuthenticated() && 
+        request.resource.data.creatorId == request.auth.uid;
+      
+      // Allow updating groups if user is the creator
+      allow update: if isAuthenticated() && 
+        resource.data.creatorId == request.auth.uid;
+      
+      // Allow deleting groups if user is the creator
+      allow delete: if isAuthenticated() && 
+        resource.data.creatorId == request.auth.uid;
+      
+      // Allow listing groups for authenticated users
+      allow list: if isAuthenticated();
     }
   }
 }

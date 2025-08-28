@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../application/bloc/todo_bloc.dart';
-import '../../application/bloc/todo_event.dart';
-import '../../application/bloc/todo_state.dart';
-import '../../application/bloc/note_bloc.dart';
-import '../../application/bloc/note_event.dart';
-import '../../application/bloc/note_state.dart';
+import '../../application/todo_bloc/todo_bloc.dart';
+import '../../application/todo_bloc/todo_event.dart';
+import '../../application/todo_bloc/todo_state.dart';
+import '../../application/note_bloc/note_bloc.dart';
+import '../../application/note_bloc/note_event.dart';
+import '../../application/note_bloc/note_state.dart';
 import '../widgets/notes_list_content.dart';
 
 class TodoListPage extends StatefulWidget {

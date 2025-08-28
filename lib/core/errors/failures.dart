@@ -22,3 +22,7 @@ class NotFoundFailure extends Failure {
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure(super.m);
 }
+
+class DatabaseFailure extends Failure {
+  const DatabaseFailure(super.m);
+}

@@ -8,14 +8,15 @@ import 'features/authentication/application/bloc/auth_bloc.dart';
 import 'features/authentication/application/bloc/auth_event.dart';
 import 'features/authentication/presentation/login_page.dart';
 import 'features/authentication/presentation/signup_page.dart';
-import 'features/todo/application/bloc/todo_bloc.dart';
-import 'features/todo/application/bloc/note_bloc.dart';
+import 'features/todo/application/todo_bloc/todo_bloc.dart';
+import 'features/todo/application/note_bloc/note_bloc.dart';
 import 'features/todo/domain/models/note_model.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/todo/presentation/pages/add_edit_todo_page.dart';
 import 'features/todo/presentation/pages/add_edit_note_page.dart';
 import 'features/profile/application/bloc/profile_bloc.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
+import 'features/bills/application/bloc/bill_bloc.dart';
 import 'home.dart';
 import 'splash_screen.dart';
 
@@ -53,6 +54,9 @@ class NotieeApp extends StatelessWidget {
         ),
         BlocProvider<ProfileBloc>(
           create: (_) => getIt<ProfileBloc>(),
+        ),
+        BlocProvider<BillBloc>(
+          create: (_) => getIt<BillBloc>(),
         ),
       ],
       child: MaterialApp(

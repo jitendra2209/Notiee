@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:notiee/core/utils/icon_path.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
+import 'features/bills/presentation/pages/bills_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -10,18 +11,63 @@ class MainNavigationPage extends StatefulWidget {
   State<MainNavigationPage> createState() => _MainNavigationPageState();
 }
 
-class _MainNavigationPageState extends State<MainNavigationPage> {
+class _MainNavigationPageState extends State<MainNavigationPage>
+    with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  bool _isFabExpanded = false;
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabAnimation;
 
   final List<Widget> _pages = [
     const TodoListPage(), // Todos
-    const Center(child: Text('Bills Page')), // Bills
+    const BillsPage(), // Bills
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _fabAnimation = CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _toggleFab() {
+    setState(() {
+      _isFabExpanded = !_isFabExpanded;
+    });
+
+    if (_isFabExpanded) {
+      _fabAnimationController.forward();
+    } else {
+      _fabAnimationController.reverse();
+    }
+  }
+
+  void _onMenuItemTap(String action) {
+    _toggleFab(); // Close the menu
+
+    if (action == 'todo') {
+      Navigator.pushNamed(context, '/add_edit_todo');
+    } else if (action == 'note') {
+      Navigator.pushNamed(context, '/add_edit_note');
+    }
   }
 
   @override
@@ -67,7 +113,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           // ),
         ],
       ),
-      body: _pages[_selectedIndex],
+      body: Stack(
+        children: [
+          _pages[_selectedIndex],
+          if (_selectedIndex == 0) _buildAnimatedFabMenu(),
+        ],
+      ),
       floatingActionButton:
           _selectedIndex == 0 ? _buildFloatingActionButton(context) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -112,44 +163,118 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        if (value == 'todo') {
-          Navigator.pushNamed(context, '/add_edit_todo');
-        } else if (value == 'note') {
-          Navigator.pushNamed(context, '/add_edit_note');
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'todo',
-          child: Row(
+    return FloatingActionButton.small(
+      onPressed: _toggleFab,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.redAccent.shade100,
+      elevation: 4,
+      child: AnimatedBuilder(
+        animation: _fabAnimation,
+        builder: (context, child) {
+          return Transform.rotate(
+            angle: _fabAnimation.value * 0.1, // 45 degrees in radians
+            child: Icon(
+              _isFabExpanded ? Icons.close : Icons.add,
+              size: 28,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAnimatedFabMenu() {
+    return Positioned(
+      bottom: 90, // Position above the FAB and bottom nav
+      right: 16,
+      child: AnimatedBuilder(
+        animation: _fabAnimation,
+        builder: (context, child) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Icon(Icons.task_alt, size: 20),
-              SizedBox(width: 8),
-              Text('Add Todo'),
+              // Add Note option
+              Transform.translate(
+                offset: Offset(0, (1 - _fabAnimation.value) * 50),
+                child: Opacity(
+                  opacity: _fabAnimation.value,
+                  child: _buildMenuOption(
+                    icon: Icons.note_add,
+                    label: 'Add Note',
+                    onTap: () => _onMenuItemTap('note'),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Add Todo option
+              Transform.translate(
+                offset: Offset(0, (1 - _fabAnimation.value) * 30),
+                child: Opacity(
+                  opacity: _fabAnimation.value,
+                  child: _buildMenuOption(
+                    icon: Icons.task_alt,
+                    label: 'Add Todo',
+                    onTap: () => _onMenuItemTap('todo'),
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'note',
-          child: Row(
-            children: [
-              Icon(Icons.note_add, size: 20),
-              SizedBox(width: 8),
-              Text('Add Note'),
-            ],
-          ),
-        ),
-      ],
-      child: FloatingActionButton.small(
-        onPressed: null, // This will be handled by PopupMenuButton
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.redAccent.shade100,
-        elevation: 4,
-        child: const Icon(
-          Icons.add,
-          size: 28,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMenuOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: Colors.redAccent.shade100,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: Colors.redAccent.shade100,
+                size: 24,
+              ),
+            ),
+          ],
         ),
       ),
     );

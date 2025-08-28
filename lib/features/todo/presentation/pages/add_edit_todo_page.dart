@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/models/todo_model.dart';
-import '../../application/bloc/todo_bloc.dart';
-import '../../application/bloc/todo_event.dart';
+import '../../application/todo_bloc/todo_bloc.dart';
+import '../../application/todo_bloc/todo_event.dart';
 
 class AddEditTodoPage extends StatefulWidget {
   const AddEditTodoPage({super.key});
@@ -44,15 +44,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
             : null;
         selectedPriority = existing!.priority ?? 'Medium';
       });
-
-      // Debug information - can be removed in production
-      print('DEBUG: Initialized form data');
-      print('Title: ${existing!.title}');
-      print('Reminder Date: ${existing!.reminderDate}');
-      print('Reminder Time: ${existing!.reminderTime}');
-      print('Priority: ${existing!.priority}');
-      print('Selected Date: $selectedReminderDate');
-      print('Selected Time: $selectedReminderTime');
     }
   }
 
