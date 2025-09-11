@@ -31,13 +31,15 @@ class _BillsPageState extends State<BillsPage> {
     final authState = context.read<AuthBloc>().state;
     if (authState.user?.phoneNumber != null) {
       _userPhone = authState.user!.phoneNumber!;
-      _loadUserGroups();
+      _loadGroupsByCurrentMonth();
     }
   }
 
-  void _loadUserGroups() {
+  void _loadGroupsByCurrentMonth() {
     if (_userPhone != null) {
-      context.read<BillBloc>().add(LoadUserGroups(_userPhone!));
+      context
+          .read<BillBloc>()
+          .add(LoadGroupsByMonth(_userPhone!, _selectedMonth, _selectedYear));
     }
   }
 
@@ -64,7 +66,7 @@ class _BillsPageState extends State<BillsPage> {
     );
 
     if (result == true) {
-      _loadUserGroups();
+      _loadGroupsByCurrentMonth();
     }
   }
 
@@ -144,13 +146,7 @@ class _BillsPageState extends State<BillsPage> {
       // backgroundColor: Colors.grey.shade50,
       body: BlocListener<BillBloc, BillState>(
         listener: (context, state) {
-          if (state is GroupsLoaded) {
-            // Filter groups for current month
-            final monthGroups = state.groupsByMonth[_selectedMonth] ?? [];
-            setState(() {
-              _currentGroups = monthGroups;
-            });
-          } else if (state is GroupsLoadedByMonth) {
+          if (state is GroupsLoadedByMonth) {
             setState(() {
               _currentGroups = state.groups;
             });
@@ -161,7 +157,7 @@ class _BillsPageState extends State<BillsPage> {
                 backgroundColor: Colors.green,
               ),
             );
-            _loadUserGroups();
+            _loadGroupsByCurrentMonth();
           } else if (state is BillError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
