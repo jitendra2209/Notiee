@@ -68,21 +68,32 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final email = _derivedEmailFromPhone(phone);
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      // Find user by phone number to get their actual email
+      final querySnapshot =
+          await _users.where('phoneNumber', isEqualTo: phone).limit(1).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return left(AuthFailure('No user found with this phone number'));
+      }
+
+      final userData = querySnapshot.docs.first.data();
+      final userEmail = userData['email'] as String?;
+
+      if (userEmail == null || userEmail.isEmpty) {
+        return left(AuthFailure('Email not found for this phone number'));
+      }
+
+      // Use the actual email for authentication
+      await _auth.signInWithEmailAndPassword(
+          email: userEmail, password: password);
       return right(unit);
     } catch (e) {
-      return left(AuthFailure(e.toString()));
+      return left(AuthFailure('Invalid phone or password'));
     }
   }
 
   @override
   Future<void> signOut() async {
     await _auth.signOut();
-  }
-
-  String _derivedEmailFromPhone(String phone) {
-    final normalized = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    return '$normalized@notiee.app';
   }
 }

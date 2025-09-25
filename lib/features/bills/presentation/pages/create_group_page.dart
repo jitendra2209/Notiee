@@ -63,6 +63,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFE6EBEF),
         title: const Text('Contact Permission'),
         content: const Text(
           'This app needs access to your contacts to help you select group members. '
@@ -202,29 +203,156 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     return monthNames[month - 1];
   }
 
+  // Neumorphic helper methods
+  Widget _buildNeumorphicContainer({
+    required Widget child,
+    double? width,
+    double? height,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? const EdgeInsets.all(20),
+      margin: margin,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildNeumorphicInput({
+    required TextEditingController controller,
+    required String hint,
+    String? Function(String?)? validator,
+    int maxLines = 1,
+  }) {
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        validator: validator,
+        style: const TextStyle(
+          color: Color(0xFF2E3A4B),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(
+            color: Color(0xFF9EA8B5),
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE6EBEF),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFE6EBEF),
         title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search contacts...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.grey),
+            ? Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EBEF),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0xFFBEC8D1),
+                      offset: Offset(4, 4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(-4, -4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
                 ),
-                style: const TextStyle(color: Colors.black),
-                onChanged: _onSearchChanged,
+                child: TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search contacts...',
+                    border: InputBorder.none,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    hintStyle: TextStyle(color: Color(0xFF9EA8B5)),
+                  ),
+                  style: const TextStyle(color: Color(0xFF2E3A4B)),
+                  onChanged: _onSearchChanged,
+                ),
               )
-            : const Text('Create Group'),
-        backgroundColor: Colors.transparent,
+            : const Text(
+                'Create Group',
+                style: TextStyle(
+                  color: Color(0xFF2E3A4B),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF2E3A4B)),
         actions: [
-          IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
-            onPressed: _toggleSearch,
+          Container(
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: _toggleSearch,
+                child: Center(
+                  child: Icon(
+                    _isSearching ? Icons.close : Icons.search,
+                    color: Colors.redAccent.shade100,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -257,14 +385,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           child: Column(
             children: [
               // Header info
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
+              _buildNeumorphicContainer(
                 margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -272,15 +394,17 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       'Creating group for',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade600,
+                        color: Colors.redAccent.shade100,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     Text(
                       '${_getMonthName(widget.month)} ${widget.year}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF2E3A4B),
                       ),
                     ),
                   ],
@@ -292,21 +416,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    TextFormField(
+                    _buildNeumorphicInput(
                       controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: 'e.g., Trip to Goa',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.redAccent.shade100),
-                        ),
-                        contentPadding: const EdgeInsets.all(8),
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
-                      ),
+                      hint: 'e.g., Trip to Goa',
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter a group name';
@@ -315,21 +427,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    _buildNeumorphicInput(
                       controller: _descriptionController,
-                      decoration: InputDecoration(
-                        hintText: 'What is this group for? (Optional)',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.redAccent.shade100),
-                        ),
-                        contentPadding: const EdgeInsets.all(8),
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
-                      ),
+                      hint: 'What is this group for? (Optional)',
                       maxLines: 2,
                     ),
                   ],
@@ -375,11 +475,47 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       final contact = _selectedContacts[index];
                       return Container(
                         margin: const EdgeInsets.only(right: 8),
-                        child: Chip(
-                          label: Text(contact.displayName),
-                          onDeleted: () => _toggleContactSelection(contact),
-                          deleteIcon: const Icon(Icons.close, size: 18),
-                          backgroundColor: Colors.red.shade50,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE6EBEF),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.redAccent.shade100.withOpacity(0.3),
+                              offset: const Offset(2, 2),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                            const BoxShadow(
+                              color: Colors.white,
+                              offset: Offset(-2, -2),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              contact.displayName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.redAccent.shade100,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            GestureDetector(
+                              onTap: () => _toggleContactSelection(contact),
+                              child: Icon(
+                                Icons.close,
+                                size: 14,
+                                color: Colors.redAccent.shade100,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -425,47 +561,122 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         final contact = _filteredContacts[index];
                         final isSelected = _selectedContacts.contains(contact);
 
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                _getAvatarColor(contact.displayName),
-                            child: Text(
-                              _getInitials(contact.displayName),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE6EBEF),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: isSelected
+                                    ? Colors.redAccent.shade100.withOpacity(0.3)
+                                    : const Color(0xFFBEC8D1),
+                                offset: const Offset(4, 4),
+                                blurRadius: 8,
+                                spreadRadius: 1,
                               ),
-                            ),
-                          ),
-                          title: Text(
-                            contact.displayName,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(contact.phoneNumber),
-                              if (contact.isRegistered)
-                                const Text(
-                                  '✓ Notiee User',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                              const BoxShadow(
+                                color: Colors.white,
+                                offset: Offset(-4, -4),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
                             ],
                           ),
-                          trailing: isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Colors.redAccent.shade100,
-                                )
-                              : const Icon(
-                                  Icons.radio_button_unchecked,
-                                  color: Colors.grey,
+                          child: ListTile(
+                            leading: Container(
+                              width: 45,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: _getAvatarColor(contact.displayName),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _getAvatarColor(contact.displayName)
+                                        .withOpacity(0.5),
+                                    offset: const Offset(2, 2),
+                                    blurRadius: 4,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _getInitials(contact.displayName),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                          onTap: () => _toggleContactSelection(contact),
+                              ),
+                            ),
+                            title: Text(
+                              contact.displayName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2E3A4B),
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  contact.phoneNumber,
+                                  style: const TextStyle(
+                                    color: Color(0xFF7C8BA0),
+                                  ),
+                                ),
+                                if (contact.isRegistered)
+                                  const Text(
+                                    '✓ Notiee User',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            trailing: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Colors.redAccent.shade100
+                                    : const Color(0xFFE6EBEF),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isSelected
+                                        ? Colors.redAccent.shade100
+                                            .withOpacity(0.5)
+                                        : const Color(0xFFBEC8D1),
+                                    offset: const Offset(2, 2),
+                                    blurRadius: 4,
+                                    spreadRadius: 0,
+                                  ),
+                                  const BoxShadow(
+                                    color: Colors.white,
+                                    offset: Offset(-2, -2),
+                                    blurRadius: 4,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: isSelected
+                                    ? const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 16,
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            onTap: () => _toggleContactSelection(contact),
+                          ),
                         );
                       },
                     );
@@ -478,22 +689,52 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: _createGroup,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent.shade100,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            elevation: 2,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.redAccent.shade100.withOpacity(0.5),
+                offset: const Offset(0, 8),
+                blurRadius: 20,
+                spreadRadius: -4,
+              ),
+              const BoxShadow(
+                color: Color(0xFFBEC8D1),
+                offset: Offset(8, 8),
+                blurRadius: 15,
+                spreadRadius: 1,
+              ),
+              const BoxShadow(
+                color: Colors.white,
+                offset: Offset(-8, -8),
+                blurRadius: 15,
+                spreadRadius: 1,
+              ),
+            ],
           ),
-          child: const Text(
-            'Create Group',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: _createGroup,
+              child: const Center(
+                child: Text(
+                  'Create Group',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ),
         ),

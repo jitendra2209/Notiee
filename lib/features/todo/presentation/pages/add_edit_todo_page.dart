@@ -54,20 +54,95 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
     super.dispose();
   }
 
+  // Neumorphic helper methods
+  Widget _buildNeumorphicContainer({
+    required Widget child,
+    double? width,
+    double? height,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? const EdgeInsets.all(20),
+      margin: margin,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildNeumorphicInput({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    int maxLines = 1,
+  }) {
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        style: const TextStyle(
+          color: Color(0xFF2E3A4B),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          labelStyle: TextStyle(
+            color: Colors.redAccent.shade100,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          hintStyle: const TextStyle(
+            color: Color(0xFF9EA8B5),
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEdit = existing != null;
     return Scaffold(
+      backgroundColor: const Color(0xFFE6EBEF),
       appBar: AppBar(
         title: Text(
           isEdit ? 'Edit Todo' : 'Add Todo',
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            color: Color(0xFF2E3A4B),
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: const IconThemeData(
+          color: Color(0xFF2E3A4B),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -75,7 +150,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title Field
-            _buildTextField(
+            _buildNeumorphicInput(
               controller: titleCtrl,
               label: 'Task Title',
               hint: 'Enter your task title',
@@ -83,7 +158,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
             const SizedBox(height: 20),
 
             // Description Field
-            _buildTextField(
+            _buildNeumorphicInput(
               controller: descCtrl,
               label: 'Description',
               hint: 'Add some details about your task',
@@ -107,70 +182,32 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: TextField(
-            controller: controller,
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
-              hintStyle: TextStyle(color: Colors.grey.shade500),
+  Widget _buildPriorityDropdown() {
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Priority',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.redAccent.shade100,
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPriorityDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Priority',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: DropdownButtonFormField<String>(
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
             value: selectedPriority,
+            dropdownColor: const Color(0xFFE6EBEF),
             decoration: const InputDecoration(
-              // prefixIcon: Icon(Icons.flag, color: Colors.grey),
               border: InputBorder.none,
-              contentPadding: EdgeInsets.all(16),
+              contentPadding: EdgeInsets.zero,
+            ),
+            style: const TextStyle(
+              color: Color(0xFF2E3A4B),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
             items: [
               DropdownMenuItem(
@@ -231,143 +268,210 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
               });
             },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildDateTimePicker() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Reminder',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Reminder',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.redAccent.shade100,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: _selectDate,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_month_outlined,
-                          color: Colors.grey.shade600),
-                      const SizedBox(width: 12),
-                      Text(
-                        selectedReminderDate != null
-                            ? '${selectedReminderDate!.day}/${selectedReminderDate!.month}/${selectedReminderDate!.year}'
-                            : 'Select Date',
-                        style: TextStyle(
-                          color: selectedReminderDate != null
-                              ? Colors.black87
-                              : Colors.grey.shade500,
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: _selectDate,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6EBEF),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0xFFBEC8D1),
+                          offset: Offset(4, 4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
                         ),
-                      ),
-                    ],
+                        BoxShadow(
+                          color: Colors.white,
+                          offset: Offset(-4, -4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.redAccent.shade100,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          selectedReminderDate != null
+                              ? '${selectedReminderDate!.day}/${selectedReminderDate!.month}/${selectedReminderDate!.year}'
+                              : 'Select Date',
+                          style: TextStyle(
+                            color: selectedReminderDate != null
+                                ? const Color(0xFF2E3A4B)
+                                : const Color(0xFF9EA8B5),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: GestureDetector(
-                onTap: _selectTime,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.access_time, color: Colors.grey.shade600),
-                      const SizedBox(width: 12),
-                      Text(
-                        selectedReminderTime != null
-                            ? _formatTimeWithAmPm(selectedReminderTime!)
-                            : 'Select Time',
-                        style: TextStyle(
-                          color: selectedReminderTime != null
-                              ? Colors.black87
-                              : Colors.grey.shade500,
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: _selectTime,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6EBEF),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0xFFBEC8D1),
+                          offset: Offset(4, 4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
                         ),
-                      ),
-                    ],
+                        BoxShadow(
+                          color: Colors.white,
+                          offset: Offset(-4, -4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          color: Colors.redAccent.shade100,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          selectedReminderTime != null
+                              ? _formatTimeWithAmPm(selectedReminderTime!)
+                              : 'Select Time',
+                          style: TextStyle(
+                            color: selectedReminderTime != null
+                                ? const Color(0xFF2E3A4B)
+                                : const Color(0xFF9EA8B5),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSaveButton(bool isEdit) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: () {
-          if (titleCtrl.text.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please enter a task title')),
-            );
-            return;
-          }
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.redAccent.shade100.withOpacity(0.5),
+            offset: const Offset(0, 8),
+            blurRadius: 20,
+            spreadRadius: -4,
+          ),
+          const BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          const BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            if (titleCtrl.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter a task title')),
+              );
+              return;
+            }
 
-          final reminderDateTime = _combineDateTime();
+            final reminderDateTime = _combineDateTime();
 
-          if (isEdit) {
-            context.read<TodoBloc>().add(TodoUpdateRequested(
-                  existing!.copyWith(
+            if (isEdit) {
+              context.read<TodoBloc>().add(TodoUpdateRequested(
+                    existing!.copyWith(
+                      title: titleCtrl.text,
+                      description: descCtrl.text,
+                      reminderDate: selectedReminderDate,
+                      reminderTime: reminderDateTime,
+                      priority: selectedPriority,
+                    ),
+                  ));
+            } else {
+              context.read<TodoBloc>().add(TodoAddRequested(TodoModel(
                     title: titleCtrl.text,
                     description: descCtrl.text,
+                    isCompleted: false,
+                    createdAt: DateTime.now(),
                     reminderDate: selectedReminderDate,
                     reminderTime: reminderDateTime,
                     priority: selectedPriority,
-                  ),
-                ));
-          } else {
-            context.read<TodoBloc>().add(TodoAddRequested(TodoModel(
-                  title: titleCtrl.text,
-                  description: descCtrl.text,
-                  isCompleted: false,
-                  createdAt: DateTime.now(),
-                  reminderDate: selectedReminderDate,
-                  reminderTime: reminderDateTime,
-                  priority: selectedPriority,
-                )));
-          }
-          Navigator.pop(context);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent.shade100,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Text(
-          isEdit ? 'Update Task' : 'Create Task',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+                  )));
+            }
+            Navigator.pop(context);
+          },
+          child: Center(
+            child: Text(
+              isEdit ? 'Update Task' : 'Create Task',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),

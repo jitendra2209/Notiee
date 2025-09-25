@@ -30,17 +30,28 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (p, c) => p.error != c.error || p.user != c.user,
+      listenWhen: (previous, current) {
+        // Only listen when there's a meaningful state change
+        return (previous.error != current.error && current.error != null) ||
+            (previous.user != current.user && current.user != null);
+      },
       listener: (context, state) {
         if (state.error != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.error!)));
+          // Clear any existing SnackBars before showing new one
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('All fields are required'),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         } else if (state.user != null) {
           Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFE6EBEF),
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -49,225 +60,161 @@ class _SignupPageState extends State<SignupPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // SvgPicture.asset(
-                    //   'assets/logo/logo_svg.svg',
-                    //   height: 230,
-                    //   width: 200,
-                    //   color: Colors.redAccent.shade100,
-                    // ),
-                    Text(
-                      'Join us!',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
-                        letterSpacing: -0.5,
-                      ),
+                    const SizedBox(height: 20),
+
+                    // Welcome text container
+                    Column(
+                      children: [
+                        Text(
+                          'Join us!',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF2D3748),
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign up to get started',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF7C8BA0),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Sign up to get started',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                    const SizedBox(height: 28),
-                    TextField(
+
+                    const SizedBox(height: 32),
+                    _buildNeumorphicInput(
                       controller: nameCtrl,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        prefixIcon: Icon(
-                          Icons.person_rounded,
-                          color: Colors.redAccent.shade100,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.redAccent.shade100,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        labelStyle: const TextStyle(color: Color(0xFF64748B)),
-                      ),
+                      label: 'Name',
+                      icon: Icons.person_rounded,
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
+                    const SizedBox(height: 16),
+                    _buildNeumorphicInput(
                       controller: emailCtrl,
+                      label: 'Email',
+                      icon: Icons.email_rounded,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(
-                          Icons.email_rounded,
-                          color: Colors.redAccent.shade100,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.redAccent.shade100,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        labelStyle: const TextStyle(color: Color(0xFF64748B)),
-                        hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
-                      ),
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
+                    const SizedBox(height: 16),
+                    _buildNeumorphicInput(
                       controller: phoneCtrl,
-                      decoration: InputDecoration(
-                        labelText: 'Phone',
-                        prefixIcon: Icon(
-                          Icons.phone_rounded,
-                          color: Colors.redAccent.shade100,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.redAccent.shade100,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        labelStyle: const TextStyle(color: Color(0xFF64748B)),
-                      ),
+                      label: 'Phone',
+                      icon: Icons.phone_rounded,
+                      keyboardType: TextInputType.phone,
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
+                    const SizedBox(height: 16),
+                    _buildNeumorphicInput(
                       controller: pwdCtrl,
+                      label: 'Password',
+                      icon: Icons.lock_rounded,
                       obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(
-                          Icons.lock_rounded,
-                          color: Colors.redAccent.shade100,
+                      onSubmitted: () => _submit(context),
+                      suffixIcon: Container(
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE6EBEF),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFFBEC8D1),
+                              offset: Offset(2, 2),
+                              blurRadius: 4,
+                              spreadRadius: 1,
+                            ),
+                            BoxShadow(
+                              color: Colors.white,
+                              offset: Offset(-2, -2),
+                              blurRadius: 4,
+                              spreadRadius: 1,
+                            ),
+                          ],
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0),
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.redAccent.shade100,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        labelStyle: const TextStyle(color: Color(0xFF64748B)),
-                        suffixIcon: IconButton(
+                        child: IconButton(
                           onPressed: () => setState(
                               () => _obscurePassword = !_obscurePassword),
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility_rounded
                                 : Icons.visibility_off_rounded,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF7C8BA0),
+                            size: 20,
                           ),
                         ),
                       ),
-                      onSubmitted: (_) => _submit(context),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
-                        return SizedBox(
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed:
-                                state.isLoading ? null : () => _submit(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent.shade100,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        return Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.redAccent.shade100,
+                                Colors.redAccent.shade200
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.redAccent.shade100,
+                                offset: const Offset(0, 4),
+                                blurRadius: 15,
+                                spreadRadius: -3,
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: state.isLoading
+                                  ? null
+                                  : () => _submit(context),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Center(
+                                child: state.isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Sign up',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
-                            child: state.isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Sign up',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
                           ),
                         );
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Have an account?',
+                          'Have an account? ',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF7C8BA0),
                           ),
                         ),
-                        TextButton(
-                          onPressed: () =>
+                        GestureDetector(
+                          onTap: () =>
                               Navigator.pushReplacementNamed(context, '/login'),
                           child: Text(
                             'Log in',
@@ -279,6 +226,8 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ],
                     ),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -300,5 +249,63 @@ class _SignupPageState extends State<SignupPage> {
             email: email,
           ),
         );
+  }
+
+  // Neumorphic Design Helper Methods
+  Widget _buildNeumorphicInput({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    VoidCallback? onSubmitted,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(4, 4),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-4, -4),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        onSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
+        style: const TextStyle(
+          color: Color(0xFF2D3748),
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(
+            icon,
+            color: Colors.redAccent.shade100,
+            size: 20,
+          ),
+          suffixIcon: suffixIcon,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+          labelStyle: const TextStyle(
+            color: Color(0xFF7C8BA0),
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
   }
 }

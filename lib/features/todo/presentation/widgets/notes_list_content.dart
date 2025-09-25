@@ -139,12 +139,25 @@ class NotesListContent extends StatelessWidget {
         arguments: note,
       ),
       child: Container(
-        // margin: const EdgeInsets.only(left: 6),
         decoration: BoxDecoration(
-          color: note.isPinned == true ? color.withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-              color: note.isPinned == true ? color : Colors.blueGrey),
+          color: const Color(0xFFE6EBEF),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: note.isPinned == true
+                  ? color.withOpacity(0.3)
+                  : const Color(0xFFBEC8D1),
+              offset: const Offset(6, 6),
+              blurRadius: 12,
+              spreadRadius: 1,
+            ),
+            const BoxShadow(
+              color: Colors.white,
+              offset: Offset(-6, -6),
+              blurRadius: 12,
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -155,51 +168,88 @@ class NotesListContent extends StatelessWidget {
               Row(
                 children: [
                   if (note.isPinned ?? false)
-                    Icon(Icons.push_pin, size: 16, color: color),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Icon(
+                        Icons.push_pin,
+                        size: 14,
+                        color: color,
+                      ),
+                    ),
                   const Spacer(),
-                  PopupMenuButton<String>(
-                    color: Colors.white,
-                    icon: Icon(Icons.more_vert,
-                        size: 16, color: Colors.grey.shade600),
-                    onSelected: (value) =>
-                        _handleMenuAction(context, note, value),
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'pin',
-                        child: Row(
-                          children: [
-                            Icon(
-                              note.isPinned ?? false
-                                  ? Icons.push_pin_outlined
-                                  : Icons.push_pin,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(note.isPinned ?? false ? 'Unpin' : 'Pin'),
-                          ],
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6EBEF),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0xFFBEC8D1),
+                          offset: Offset(2, 2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 16),
-                            SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
+                        BoxShadow(
+                          color: Colors.white,
+                          offset: Offset(-2, -2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         ),
+                      ],
+                    ),
+                    child: PopupMenuButton<String>(
+                      color: const Color(0xFFE6EBEF),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 14,
+                        color: Color(0xFF7C8BA0),
                       ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 16, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
+                      onSelected: (value) =>
+                          _handleMenuAction(context, note, value),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'pin',
+                          child: Row(
+                            children: [
+                              Icon(
+                                note.isPinned ?? false
+                                    ? Icons.push_pin_outlined
+                                    : Icons.push_pin,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(note.isPinned ?? false ? 'Unpin' : 'Pin'),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, size: 16),
+                              SizedBox(width: 8),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, size: 16, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -211,7 +261,7 @@ class NotesListContent extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Color(0xFF2E3A4B),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -222,9 +272,9 @@ class NotesListContent extends StatelessWidget {
               Expanded(
                 child: Text(
                   note.content ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: Colors.grey.shade700,
+                    color: Color(0xFF7C8BA0),
                     height: 1.4,
                   ),
                   maxLines: 8,
@@ -240,17 +290,31 @@ class NotesListContent extends StatelessWidget {
                       .take(2)
                       .map((tag) => Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(4),
+                              color: const Color(0xFFE6EBEF),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: color.withOpacity(0.3),
+                                  offset: const Offset(1, 1),
+                                  blurRadius: 2,
+                                  spreadRadius: 0,
+                                ),
+                                const BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-1, -1),
+                                  blurRadius: 2,
+                                  spreadRadius: 0,
+                                ),
+                              ],
                             ),
                             child: Text(
                               '#$tag',
                               style: TextStyle(
                                 fontSize: 10,
                                 color: color,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ))
@@ -260,9 +324,9 @@ class NotesListContent extends StatelessWidget {
               ],
               Text(
                 _formatDate(note.updatedAt ?? note.createdAt),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
-                  color: Colors.grey.shade500,
+                  color: Color(0xFF9EA8B5),
                 ),
               ),
             ],
@@ -290,19 +354,78 @@ class NotesListContent extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Note'),
-        content: const Text('Are you sure you want to delete this note?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+        backgroundColor: const Color(0xFFE6EBEF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Delete Note',
+          style: TextStyle(
+            color: Colors.redAccent.shade100,
+            fontWeight: FontWeight.w600,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<NoteBloc>().add(NoteDeleteRequested(note.id!));
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+        ),
+        content: const Text(
+          'Are you sure you want to delete this note?',
+          style: TextStyle(
+            color: Color(0xFF2E3A4B),
+          ),
+        ),
+        actions: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF7C8BA0)),
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.read<NoteBloc>().add(NoteDeleteRequested(note.id!));
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
           ),
         ],
       ),

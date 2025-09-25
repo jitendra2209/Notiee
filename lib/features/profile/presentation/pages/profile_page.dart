@@ -31,6 +31,9 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isEditingPhone = false;
   bool _isEditingEmail = false;
 
+  // Developer section expansion state
+  bool _isDeveloperExpanded = false;
+
   @override
   void initState() {
     super.initState();
@@ -77,244 +80,411 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+      backgroundColor: const Color(0xFFE6EBEF),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Custom App Bar with Neumorphic Design
+            _buildNeumorphicAppBar(),
+            Expanded(
+              child: _buildContent(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNeumorphicAppBar() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: _buildNeumorphicContainer(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              _buildNeumorphicButton(
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  size: 18,
+                  color: Color(0xFF7C8BA0),
+                ),
+                onTap: () => Navigator.pop(context),
+              ),
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'Profile',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D3748),
+                    ),
+                  ),
+                ),
+              ),
+              _buildNeumorphicButton(
+                child: const Icon(
+                  Icons.logout,
+                  size: 18,
+                  color: Color(0xFFE53E3E),
+                ),
+                onTap: _showLogoutDialog,
+              ),
+            ],
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.red),
-            onPressed: () {
-              _showLogoutDialog();
-            },
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return BlocConsumer<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state is ProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: const Color(0xFFE53E3E),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              duration: const Duration(seconds: 4),
+            ),
+          );
+
+          if (state.message.contains('permission') ||
+              state.message.contains('denied') ||
+              state.message.contains('PERMISSION_DENIED')) {
+            _showPermissionErrorDialog();
+          }
+        } else if (state is ProfileUpdateSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: const Color(0xFF38A169),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          );
+          if (state.message.contains('Password')) {
+            _currentPasswordController.clear();
+            _newPasswordController.clear();
+            _confirmPasswordController.clear();
+            setState(() {
+              _showPasswordSection = false;
+            });
+          }
+        } else if (state is ProfileLoaded) {
+          _populateFields(state.profile);
+        }
+      },
+      builder: (context, state) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              // Profile Avatar Section
+              _buildProfileAvatarSection(),
+              const SizedBox(height: 24),
+
+              // User Info Section
+              _buildUserInfoSection(),
+              const SizedBox(height: 24),
+
+              // Security Section
+              _buildPasswordSection(),
+              const SizedBox(height: 24),
+
+              // Save Button
+              if (_isEditingName ||
+                  _isEditingPhone ||
+                  _isEditingEmail ||
+                  _showPasswordSection)
+                _buildSaveButton(),
+              const SizedBox(height: 24),
+
+              // Developer Section
+              _buildDeveloperSection(),
+              const SizedBox(height: 32),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Neumorphic Design Helper Methods
+  Widget _buildNeumorphicContainer({
+    required Widget child,
+    double? width,
+    double? height,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? const EdgeInsets.all(20),
+      margin: margin,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
           ),
         ],
       ),
-      body: BlocConsumer<ProfileBloc, ProfileState>(
-        listener: (context, state) {
-          if (state is ProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: ${state.message}'),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 4),
-              ),
-            );
+      child: child,
+    );
+  }
 
-            // If there's a permission error, show additional help
-            if (state.message.contains('permission') ||
-                state.message.contains('denied') ||
-                state.message.contains('PERMISSION_DENIED')) {
-              _showPermissionErrorDialog();
-            }
-          } else if (state is ProfileUpdateSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Clear password fields after successful update
-            if (state.message.contains('Password')) {
-              _currentPasswordController.clear();
-              _newPasswordController.clear();
-              _confirmPasswordController.clear();
-              setState(() {
-                _showPasswordSection = false;
-              });
-            }
-          } else if (state is ProfileLoaded) {
-            _populateFields(state.profile);
-          }
-        },
-        builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // User Info Section
-                _buildUserInfoSection(),
-                const SizedBox(height: 30),
+  Widget _buildNeumorphicButton({
+    required Widget child,
+    required VoidCallback onTap,
+    double? width,
+    double? height,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: width ?? 40,
+        height: height ?? 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE6EBEF),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0xFFBEC8D1),
+              offset: Offset(4, 4),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(-4, -4),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Center(child: child),
+      ),
+    );
+  }
 
-                // Password Section
-                _buildPasswordSection(),
-                const SizedBox(height: 30),
+  Widget _buildNeumorphicInput({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isEditing = false,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isEditing
+            ? [
+                const BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+                const BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+              ]
+            : [
+                const BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(2, 2),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+                const BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-2, -2),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ],
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        readOnly: !isEditing,
+        obscureText: obscureText,
+        style: TextStyle(
+          color: isEditing ? const Color(0xFF2D3748) : const Color(0xFF7C8BA0),
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          prefixIcon: Icon(
+            icon,
+            color:
+                isEditing ? const Color(0xFF667EEA) : const Color(0xFF7C8BA0),
+            size: 20,
+          ),
+          suffixIcon: suffixIcon,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+          hintStyle: const TextStyle(
+            color: Color(0xFF9CA3AF),
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
 
-                // Save Button - Only show when editing or password section is open
-                if (_isEditingName ||
-                    _isEditingPhone ||
-                    _isEditingEmail ||
-                    _showPasswordSection)
-                  _buildSaveButton(),
-                const SizedBox(height: 10),
-
-                // Developer Details Section
-                _buildDeveloperSection(),
-                const SizedBox(height: 50),
+  Widget _buildProfileAvatarSection() {
+    return _buildNeumorphicContainer(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 80,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(6, 6),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-6, -6),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
               ],
             ),
-          );
-        },
+            child: const Center(
+              child: Icon(
+                Icons.person,
+                size: 40,
+                color: Color(0xFF667EEA),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _nameController.text.isNotEmpty
+                ? _nameController.text
+                : 'Your Name',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            _phoneController.text.isNotEmpty
+                ? _phoneController.text
+                : 'Phone Number',
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF7C8BA0),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildUserInfoSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Personal Information',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+    return _buildNeumorphicContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Personal Information',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
-        // Name Field
-        _buildEditableField(
-          controller: _nameController,
-          label: 'Full Name',
-          hint: 'Enter your full name',
-          icon: Icons.person_outline,
-          isEditing: _isEditingName,
-          onEditToggle: () {
-            setState(() {
-              _isEditingName = !_isEditingName;
-            });
-          },
-        ),
-        const SizedBox(height: 16),
-
-        // Phone Field
-        _buildEditableField(
-          controller: _phoneController,
-          label: 'Phone Number',
-          hint: '+91XXXXXXXXXX',
-          icon: Icons.phone_outlined,
-          keyboardType: TextInputType.phone,
-          isEditing: _isEditingPhone,
-          onEditToggle: () {
-            setState(() {
-              _isEditingPhone = !_isEditingPhone;
-            });
-          },
-        ),
-        const SizedBox(height: 16),
-
-        // Email Field
-        _buildEditableField(
-          controller: _emailController,
-          label: 'Email Address',
-          hint: 'Enter your email address',
-          icon: Icons.email_outlined,
-          keyboardType: TextInputType.emailAddress,
-          isEditing: _isEditingEmail,
-          onEditToggle: () {
-            setState(() {
-              _isEditingEmail = !_isEditingEmail;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Security',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _showPasswordSection = !_showPasswordSection;
-                });
-              },
-              child: Text(
-                _showPasswordSection ? 'Cancel' : 'Change Password',
-                style: TextStyle(
-                  color: Colors.redAccent.shade100,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        if (_showPasswordSection) ...[
-          const SizedBox(height: 16),
-
-          // Current Password
-          _buildPasswordField(
-            controller: _currentPasswordController,
-            label: 'Current Password',
-            hint: 'Enter current password',
-            obscureText: _obscureCurrentPassword,
-            onToggleVisibility: () {
+          // Name Field
+          _buildNeumorphicEditableField(
+            controller: _nameController,
+            label: 'Full Name',
+            hint: 'Enter your full name',
+            icon: Icons.person_outline,
+            isEditing: _isEditingName,
+            onEditToggle: () {
               setState(() {
-                _obscureCurrentPassword = !_obscureCurrentPassword;
+                _isEditingName = !_isEditingName;
               });
             },
           ),
           const SizedBox(height: 16),
 
-          // New Password
-          _buildPasswordField(
-            controller: _newPasswordController,
-            label: 'New Password',
-            hint: 'Enter new password',
-            obscureText: _obscureNewPassword,
-            onToggleVisibility: () {
+          // Phone Field
+          _buildNeumorphicEditableField(
+            controller: _phoneController,
+            label: 'Phone Number',
+            hint: '+91XXXXXXXXXX',
+            icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+            isEditing: _isEditingPhone,
+            onEditToggle: () {
               setState(() {
-                _obscureNewPassword = !_obscureNewPassword;
+                _isEditingPhone = !_isEditingPhone;
               });
             },
           ),
-          // Password strength indicator
-          if (_newPasswordController.text.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            _buildPasswordStrengthIndicator(),
-          ],
           const SizedBox(height: 16),
 
-          // Confirm Password
-          _buildPasswordField(
-            controller: _confirmPasswordController,
-            label: 'Confirm New Password',
-            hint: 'Confirm new password',
-            obscureText: _obscureConfirmPassword,
-            onToggleVisibility: () {
+          // Email Field
+          _buildNeumorphicEditableField(
+            controller: _emailController,
+            label: 'Email Address',
+            hint: 'Enter your email address',
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+            isEditing: _isEditingEmail,
+            onEditToggle: () {
               setState(() {
-                _obscureConfirmPassword = !_obscureConfirmPassword;
+                _isEditingEmail = !_isEditingEmail;
               });
             },
           ),
         ],
-      ],
+      ),
     );
   }
 
-  Widget _buildEditableField({
+  Widget _buildNeumorphicEditableField({
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -334,64 +504,125 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Color(0xFF4A5568),
               ),
             ),
-            GestureDetector(
-              onTap: onEditToggle,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: isEditing
-                      ? Colors.redAccent.shade100
-                      : Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  isEditing ? Icons.check : Icons.edit,
-                  size: 16,
-                  color: isEditing ? Colors.white : Colors.grey.shade600,
-                ),
+            _buildNeumorphicButton(
+              width: 32,
+              height: 32,
+              child: Icon(
+                isEditing ? Icons.check : Icons.edit,
+                size: 16,
+                color: isEditing
+                    ? const Color(0xFF38A169)
+                    : const Color(0xFF667EEA),
               ),
+              onTap: onEditToggle,
             ),
           ],
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: isEditing ? Colors.white : Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color:
-                  isEditing ? Colors.redAccent.shade100 : Colors.grey.shade200,
-            ),
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            readOnly: !isEditing,
-            decoration: InputDecoration(
-              hintText: hint,
-              prefixIcon: Icon(
-                icon,
-                color: isEditing
-                    ? Colors.redAccent.shade100
-                    : Colors.grey.shade600,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
-              hintStyle: TextStyle(color: Colors.grey.shade500),
-            ),
-            style: TextStyle(
-              color: isEditing ? Colors.black87 : Colors.grey.shade700,
-            ),
-          ),
+        _buildNeumorphicInput(
+          controller: controller,
+          hint: hint,
+          icon: icon,
+          isEditing: isEditing,
+          keyboardType: keyboardType,
         ),
       ],
     );
   }
 
-  Widget _buildPasswordField({
+  Widget _buildPasswordSection() {
+    return _buildNeumorphicContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Security',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              _buildNeumorphicButton(
+                width: 120,
+                height: 36,
+                child: Text(
+                  _showPasswordSection ? 'Cancel' : 'Change',
+                  style: const TextStyle(
+                    color: Color(0xFF667EEA),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    _showPasswordSection = !_showPasswordSection;
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_showPasswordSection) ...[
+            const SizedBox(height: 20),
+
+            // Current Password
+            _buildNeumorphicPasswordField(
+              controller: _currentPasswordController,
+              label: 'Current Password',
+              hint: 'Enter current password',
+              obscureText: _obscureCurrentPassword,
+              onToggleVisibility: () {
+                setState(() {
+                  _obscureCurrentPassword = !_obscureCurrentPassword;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // New Password
+            _buildNeumorphicPasswordField(
+              controller: _newPasswordController,
+              label: 'New Password',
+              hint: 'Enter new password',
+              obscureText: _obscureNewPassword,
+              onToggleVisibility: () {
+                setState(() {
+                  _obscureNewPassword = !_obscureNewPassword;
+                });
+              },
+            ),
+            // Password strength indicator
+            if (_newPasswordController.text.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _buildPasswordStrengthIndicator(),
+            ],
+            const SizedBox(height: 16),
+
+            // Confirm Password
+            _buildNeumorphicPasswordField(
+              controller: _confirmPasswordController,
+              label: 'Confirm New Password',
+              hint: 'Confirm new password',
+              obscureText: _obscureConfirmPassword,
+              onToggleVisibility: () {
+                setState(() {
+                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                });
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNeumorphicPasswordField({
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -406,33 +637,25 @@ class _ProfilePageState extends State<ProfilePage> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Color(0xFF4A5568),
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            decoration: InputDecoration(
-              hintText: hint,
-              prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade600),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey.shade600,
-                ),
-                onPressed: onToggleVisibility,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
-              hintStyle: TextStyle(color: Colors.grey.shade500),
+        _buildNeumorphicInput(
+          controller: controller,
+          hint: hint,
+          icon: Icons.lock_outline,
+          isEditing: true,
+          obscureText: obscureText,
+          suffixIcon: _buildNeumorphicButton(
+            width: 32,
+            height: 32,
+            child: Icon(
+              obscureText ? Icons.visibility_off : Icons.visibility,
+              size: 16,
+              color: const Color(0xFF7C8BA0),
             ),
+            onTap: onToggleVisibility,
           ),
         ),
       ],
@@ -444,50 +667,65 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context, state) {
         final isLoading = state is ProfileLoading;
 
-        return SizedBox(
+        return Container(
           width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: isLoading ? null : _saveProfile,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent.shade100,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              disabledBackgroundColor: Colors.grey.shade300,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: isLoading
-                ? const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        'Saving...',
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0xFF667EEA),
+                offset: Offset(0, 4),
+                blurRadius: 15,
+                spreadRadius: -3,
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: isLoading ? null : _saveProfile,
+              borderRadius: BorderRadius.circular(16),
+              child: Center(
+                child: isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            'Saving...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Text(
+                        'Save Changes',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
-                    ],
-                  )
-                : const Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+              ),
+            ),
           ),
         );
       },
@@ -585,27 +823,118 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showPermissionErrorDialog() {
     showDialog(
       context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Permission Error'),
-          content: const Text(
-            'There seems to be a permissions issue with accessing your profile data. '
-            'This might be due to Firestore security rules. Please contact support '
-            'or try logging out and logging back in.',
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(8, 8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-8, -8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6EBEF),
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0xFFBEC8D1),
+                        offset: Offset(4, 4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(-4, -4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: Color(0xFFD69E2E),
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Title
+                const Text(
+                  'Permission Error',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Content
+                const Text(
+                  'There seems to be a permissions issue with accessing your profile data. '
+                  'This might be due to Firestore security rules. Please contact support '
+                  'or try logging out and logging back in.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF7C8BA0),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Actions
+                Row(
+                  children: [
+                    // OK Button
+                    Expanded(
+                      child: _buildNeumorphicDialogButton(
+                        text: 'OK',
+                        textColor: const Color(0xFF667EEA),
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Logout & Try Again Button
+                    Expanded(
+                      child: _buildNeumorphicDialogButton(
+                        text: 'Logout & Try Again',
+                        textColor: const Color(0xFFE53E3E),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          _showLogoutDialog();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showLogoutDialog();
-              },
-              child: const Text('Logout & Try Again'),
-            ),
-          ],
         );
       },
     );
@@ -614,34 +943,182 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showLogoutDialog() {
     showDialog(
       context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(20),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<AuthBloc>().add(AuthSignOutRequested(
-                      onSuccess: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/login', (_) => false);
-                      },
-                      onFailure: () {},
-                    ));
-              },
-              child: Text(
-                'Logout',
-                style: TextStyle(color: Colors.red.shade600),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6EBEF),
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0xFFBEC8D1),
+                        offset: Offset(4, 4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(-4, -4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: Color(0xFFE53E3E),
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Title
+                const Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Content
+                const Text(
+                  'Are you sure you want to logout?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF7C8BA0),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Actions
+                Row(
+                  children: [
+                    // Cancel Button
+                    Expanded(
+                      child: _buildNeumorphicDialogButton(
+                        text: 'Cancel',
+                        textColor: const Color(0xFF7C8BA0),
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Logout Button
+                    Expanded(
+                      child: Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFE53E3E), Color(0xFFC53030)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFFE53E3E),
+                              offset: Offset(0, 4),
+                              blurRadius: 10,
+                              spreadRadius: -2,
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              context.read<AuthBloc>().add(AuthSignOutRequested(
+                                    onSuccess: () {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context, '/login', (_) => false);
+                                    },
+                                    onFailure: () {},
+                                  ));
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: const Center(
+                              child: Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
+    );
+  }
+
+  Widget _buildNeumorphicDialogButton({
+    required String text,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE6EBEF),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0xFFBEC8D1),
+              offset: Offset(4, 4),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(-4, -4),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -655,55 +1132,87 @@ class _ProfilePageState extends State<ProfilePage> {
 
     switch (strength) {
       case PasswordStrength.weak:
-        strengthColor = Colors.red;
+        strengthColor = const Color(0xFFE53E3E);
         strengthText = 'Weak';
         strengthValue = 0.3;
         break;
       case PasswordStrength.medium:
-        strengthColor = Colors.orange;
+        strengthColor = const Color(0xFFD69E2E);
         strengthText = 'Medium';
         strengthValue = 0.6;
         break;
       case PasswordStrength.strong:
-        strengthColor = Colors.green;
+        strengthColor = const Color(0xFF38A169);
         strengthText = 'Strong';
         strengthValue = 1.0;
         break;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: LinearProgressIndicator(
-                value: strengthValue,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(strengthColor),
-                minHeight: 4,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              strengthText,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: strengthColor,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Password should be at least 8 characters with letters and numbers',
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.grey.shade600,
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(2, 2),
+            blurRadius: 6,
+            spreadRadius: 1,
           ),
-        ),
-      ],
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-2, -2),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFBEC8D1),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: strengthValue,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: strengthColor,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                strengthText,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: strengthColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Password should be at least 8 characters with letters and numbers',
+            style: TextStyle(
+              fontSize: 11,
+              color: Color(0xFF7C8BA0),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -742,42 +1251,101 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildDeveloperSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: ExpansionTile(
-        backgroundColor: Colors.white,
-        collapsedBackgroundColor: Colors.white,
-        shape: const Border(),
-        collapsedShape: const Border(),
-        leading: Icon(
-          Icons.code,
-          color: Colors.redAccent.shade100,
-        ),
-        title: const Text(
-          'Developer Info',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        subtitle: const Text(
-          'About the app developer',
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
+    return _buildNeumorphicContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isDeveloperExpanded = !_isDeveloperExpanded;
+              });
+            },
+            child: Row(
               children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6EBEF),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0xFFBEC8D1),
+                        offset: Offset(4, 4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(-4, -4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.code,
+                    color: Color(0xFF667EEA),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Developer Info',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2D3748),
+                        ),
+                      ),
+                      Text(
+                        'About the app developer',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF7C8BA0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: _isDeveloperExpanded ? 0.5 : 0,
+                  child: _buildNeumorphicButton(
+                    width: 32,
+                    height: 32,
+                    child: const Icon(
+                      Icons.expand_more,
+                      size: 16,
+                      color: Color(0xFF667EEA),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _isDeveloperExpanded = !_isDeveloperExpanded;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Expandable Content
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 300),
+            crossFadeState: _isDeveloperExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              children: [
+                const SizedBox(height: 20),
+
                 // Developer Info
                 _buildDeveloperInfo(),
                 const SizedBox(height: 20),
@@ -797,51 +1365,65 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildDeveloperInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        const Row(
-          children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.blue,
-              child: Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 30,
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE6EBEF),
+            shape: BoxShape.circle,
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0xFFBEC8D1),
+                offset: Offset(4, 4),
+                blurRadius: 8,
+                spreadRadius: 1,
               ),
-            ),
-            SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Jitendra Mannuru',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                Text(
-                  'Flutter Developer',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ],
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(-4, -4),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.person,
+            color: Color(0xFF667EEA),
+            size: 24,
+          ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          'Passionate Flutter developer creating beautiful and functional mobile applications. '
-          'Specializing in clean architecture and user-centric design.',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade700,
-            height: 1.4,
+        const SizedBox(width: 16),
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Jitendra Mannuru',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              Text(
+                'Flutter Developer',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF7C8BA0),
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Passionate Flutter developer creating beautiful mobile applications.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF4A5568),
+                  height: 1.4,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -857,18 +1439,18 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Color(0xFF2D3748),
           ),
         ),
         const SizedBox(height: 12),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             _buildSocialButton(
               icon: Icons.code,
               label: 'GitHub',
-              color: Colors.black87,
+              color: const Color(0xFF2D3748),
               url: 'https://github.com/jitendra2209',
             ),
             _buildSocialButton(
@@ -898,7 +1480,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildSocialButton(
               icon: Icons.language,
               label: 'Website',
-              color: Colors.redAccent.shade100,
+              color: const Color(0xFF667EEA),
               url: 'https://jitendraportfolio.vercel.app/',
             ),
           ],
@@ -913,29 +1495,41 @@ class _ProfilePageState extends State<ProfilePage> {
     required Color color,
     required String url,
   }) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => _launchURL(url),
-      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          color: const Color(0xFFE6EBEF),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0xFFBEC8D1),
+              offset: Offset(2, 2),
+              blurRadius: 6,
+              spreadRadius: 1,
+            ),
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(-2, -2),
+              blurRadius: 6,
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              size: 16,
+              size: 14,
               color: color,
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: color,
               ),
@@ -948,53 +1542,66 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildAppInfo() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(2, 2),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-2, -2),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'About Notiee',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Color(0xFF2D3748),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
-            'Notiee is your smart daily companion for managing todos and bills. '
-            'Built with Flutter and powered by Firebase for a seamless experience.',
+            'Your smart daily companion for managing todos and notes. '
+            'Built with Flutter and powered by Firebase.',
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey.shade700,
+              color: Color(0xFF4A5568),
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
-          const Row(
+          SizedBox(height: 12),
+          Row(
             children: [
-              Icon(Icons.apps, size: 14, color: Colors.grey),
+              Icon(Icons.apps, size: 14, color: Color(0xFF667EEA)),
               SizedBox(width: 4),
               Text(
                 'Version 1.0.0',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey,
+                  color: Color(0xFF7C8BA0),
                 ),
               ),
               SizedBox(width: 16),
-              Icon(Icons.flutter_dash, size: 14, color: Colors.blue),
+              Icon(Icons.flutter_dash, size: 14, color: Color(0xFF667EEA)),
               SizedBox(width: 4),
               Text(
                 'Flutter',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey,
+                  color: Color(0xFF7C8BA0),
                 ),
               ),
             ],

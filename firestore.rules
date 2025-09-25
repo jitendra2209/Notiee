@@ -16,6 +16,10 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
       allow create: if isAuthenticated() && request.auth.uid == userId;
       
+      // Allow querying users by phone number for authentication (login) purposes
+      // This is needed for the login flow to find user's email by phone number
+      allow list: if request.query.limit == 1;
+      
       // Users can read and write their own todos (subcollection)
       match /todos/{todoId} {
         allow read, write: if isOwner(userId);
