@@ -53,6 +53,76 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     super.dispose();
   }
 
+  // Neumorphic helper methods
+  Widget _buildNeumorphicContainer({
+    required Widget child,
+    double? width,
+    double? height,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? const EdgeInsets.all(20),
+      margin: margin,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildNeumorphicInput({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    int maxLines = 1,
+  }) {
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        style: const TextStyle(
+          color: Color(0xFF2E3A4B),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          labelStyle: TextStyle(
+            color: Colors.redAccent.shade100,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          hintStyle: const TextStyle(
+            color: Color(0xFF9EA8B5),
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedColorData = _noteColors.firstWhere(
@@ -61,7 +131,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFFE6EBEF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -70,28 +140,94 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
+            color: Color(0xFF2E3A4B),
           ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Color(0xFF2E3A4B),
         ),
         actions: [
           // Pin button
-          IconButton(
-            icon: Icon(
-              _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-              color: _isPinned ? selectedColorData['color'] : Colors.grey,
+          Container(
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            onPressed: () {
-              setState(() {
-                _isPinned = !_isPinned;
-              });
-            },
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  setState(() {
+                    _isPinned = !_isPinned;
+                  });
+                },
+                child: Center(
+                  child: Icon(
+                    _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                    color: _isPinned
+                        ? Colors.redAccent.shade100
+                        : const Color(0xFF7C8BA0),
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
           ),
           // Color picker
-          IconButton(
-            icon: Icon(
-              Icons.palette_outlined,
-              color: selectedColorData['color'],
+          Container(
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            onPressed: _showColorPicker,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: _showColorPicker,
+                child: Center(
+                  child: Icon(
+                    Icons.palette_outlined,
+                    color: selectedColorData['color'],
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -101,7 +237,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title field
-            _buildTextField(
+            _buildNeumorphicInput(
               controller: _titleController,
               label: 'Note Title',
               hint: 'Enter your note title',
@@ -112,7 +248,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
             _buildTagsSection(selectedColorData),
             const SizedBox(height: 20),
             // Content field
-            _buildTextField(
+            _buildNeumorphicInput(
               controller: _contentController,
               label: 'Content',
               hint: 'Start writing your note...',
@@ -128,152 +264,195 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: TextField(
-            controller: controller,
-            maxLines: maxLines,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
-              hintStyle: TextStyle(color: Colors.grey.shade500),
+  Widget _buildTagsSection(Map<String, dynamic> selectedColorData) {
+    return _buildNeumorphicContainer(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tags',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.redAccent.shade100,
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTagsSection(Map<String, dynamic> selectedColorData) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Tags',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Existing tags
-                if (_tags.isNotEmpty) ...[
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _tags
-                        .map((tag) => Chip(
-                              label: Text(
-                                '#$tag',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: selectedColorData['color'],
-                                ),
-                              ),
-                              backgroundColor:
-                                  selectedColorData['color'].withOpacity(0.2),
-                              deleteIcon: Icon(
-                                Icons.close,
-                                size: 16,
+          const SizedBox(height: 12),
+          // Existing tags
+          if (_tags.isNotEmpty) ...[
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _tags
+                  .map((tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE6EBEF),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  selectedColorData['color'].withOpacity(0.3),
+                              offset: const Offset(2, 2),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                            const BoxShadow(
+                              color: Colors.white,
+                              offset: Offset(-2, -2),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '#$tag',
+                              style: TextStyle(
+                                fontSize: 12,
                                 color: selectedColorData['color'],
+                                fontWeight: FontWeight.w600,
                               ),
-                              onDeleted: () {
+                            ),
+                            const SizedBox(width: 6),
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
                                   _tags.remove(tag);
                                 });
                               },
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 12),
-                  const Divider(),
-                  const SizedBox(height: 12),
-                ],
-                // Add tag field
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _tagController,
-                        decoration: InputDecoration(
-                          hintText: 'Add a tag...',
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(color: Colors.grey.shade500),
+                              child: Icon(
+                                Icons.close,
+                                size: 14,
+                                color: selectedColorData['color'],
+                              ),
+                            ),
+                          ],
                         ),
-                        onSubmitted: _addTag,
-                      ),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              height: 1,
+              color: const Color(0xFFBEC8D1),
+            ),
+            const SizedBox(height: 12),
+          ],
+          // Add tag field
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _tagController,
+                  style: const TextStyle(
+                    color: Color(0xFF2E3A4B),
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Add a tag...',
+                    border: InputBorder.none,
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF9EA8B5),
+                      fontSize: 14,
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        color: selectedColorData['color'],
-                      ),
-                      onPressed: () => _addTag(_tagController.text),
+                  ),
+                  onSubmitted: _addTag,
+                ),
+              ),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EBEF),
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0xFFBEC8D1),
+                      offset: Offset(2, 2),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(-2, -2),
+                      blurRadius: 4,
+                      spreadRadius: 1,
                     ),
                   ],
                 ),
-              ],
-            ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => _addTag(_tagController.text),
+                    child: Center(
+                      child: Icon(
+                        Icons.add,
+                        color: selectedColorData['color'],
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildSaveButton() {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _saveNote,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent.shade100,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Text(
-          widget.note == null ? 'Create Note' : 'Update Note',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.redAccent.shade100.withOpacity(0.5),
+            offset: const Offset(0, 8),
+            blurRadius: 20,
+            spreadRadius: -4,
+          ),
+          const BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(8, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+          const BoxShadow(
+            color: Colors.white,
+            offset: Offset(-8, -8),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: _saveNote,
+          child: Center(
+            child: Text(
+              widget.note == null ? 'Create Note' : 'Update Note',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),
@@ -283,13 +462,14 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   void _showColorPicker() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFE6EBEF),
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -304,12 +484,12 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Choose Note Color',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.redAccent.shade100,
               ),
             ),
             const SizedBox(height: 20),
@@ -332,28 +512,50 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: colorData['color'].withOpacity(0.2),
+                          color: const Color(0xFFE6EBEF),
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colorData['color'],
-                            width: isSelected ? 3 : 2,
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected
+                                  ? colorData['color'].withOpacity(0.5)
+                                  : const Color(0xFFBEC8D1),
+                              offset: const Offset(4, 4),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                            const BoxShadow(
+                              color: Colors.white,
+                              offset: Offset(-4, -4),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: colorData['color'],
+                              shape: BoxShape.circle,
+                            ),
+                            child: isSelected
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 18,
+                                  )
+                                : null,
                           ),
                         ),
-                        child: isSelected
-                            ? Icon(
-                                Icons.check,
-                                color: colorData['color'],
-                                size: 24,
-                              )
-                            : null,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         colorData['label'],
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade700,
+                          color: Color(0xFF7C8BA0),
                         ),
                       ),
                     ],

@@ -42,24 +42,54 @@ class _TodoListPageState extends State<TodoListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE6EBEF),
       body: Column(
         children: [
-          // Tab Bar
+          // Tab Bar with Neumorphic Design
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(25),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(8, 8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-8, -8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
             child: TabBar(
               controller: _tabController,
               indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
-                color: Colors.redAccent.shade100,
-                borderRadius: BorderRadius.circular(25),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.redAccent.shade100,
+                    Colors.redAccent.shade200
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.redAccent.shade100.withOpacity(0.5),
+                    offset: const Offset(0, 4),
+                    blurRadius: 10,
+                    spreadRadius: -2,
+                  ),
+                ],
               ),
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey.shade600,
+              unselectedLabelColor: const Color(0xFF7C8BA0),
               labelStyle: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -158,160 +188,305 @@ class _TodoListPageState extends State<TodoListPage>
       itemBuilder: (context, index) {
         final t = todos[index];
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: _getPriorityColor(t.priority),
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-          ),
-          child: Container(
-            margin: const EdgeInsets.only(left: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(6, 6),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-6, -6),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: Container(
+              margin: const EdgeInsets.only(left: 4),
+              decoration: BoxDecoration(
+                color: _getPriorityColor(t.priority),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                margin: const EdgeInsets.only(left: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EBEF),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Priority indicator
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: _getPriorityColor(t.priority),
-                          shape: BoxShape.circle,
-                        ),
+                      Row(
+                        children: [
+                          // Priority indicator
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: _getPriorityColor(t.priority),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              t.title ?? '',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                decoration: isCompleted
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color:
+                                    isCompleted ? Colors.grey : Colors.black87,
+                              ),
+                            ),
+                          ),
+                          if (!isCompleted)
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE6EBEF),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (t.isCompleted ?? false)
+                                        ? Colors.redAccent.shade100
+                                            .withOpacity(0.3)
+                                        : const Color(0xFFBEC8D1),
+                                    offset: const Offset(2, 2),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                  const BoxShadow(
+                                    color: Colors.white,
+                                    offset: Offset(-2, -2),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8),
+                                  onTap: () {
+                                    context
+                                        .read<TodoBloc>()
+                                        .add(TodoUpdateRequested(
+                                          t.copyWith(
+                                              isCompleted:
+                                                  !(t.isCompleted ?? false)),
+                                        ));
+                                  },
+                                  child: Center(
+                                      child: Icon(
+                                    Icons.check,
+                                    size: 18,
+                                    color: Colors.green,
+                                  )),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          t.title ?? '',
+                      if (t.description?.isNotEmpty == true) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          t.description!,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: isCompleted
+                                ? Colors.grey
+                                : Colors.grey.shade600,
                             decoration:
                                 isCompleted ? TextDecoration.lineThrough : null,
-                            color: isCompleted ? Colors.grey : Colors.black87,
                           ),
                         ),
-                      ),
-                      Checkbox(
-                        value: t.isCompleted ?? false,
-                        activeColor: Colors.redAccent.shade100,
-                        onChanged: (v) {
-                          context.read<TodoBloc>().add(TodoUpdateRequested(
-                                t.copyWith(isCompleted: v ?? false),
-                              ));
-                        },
+                      ],
+                      // const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          // Priority label
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE6EBEF),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _getPriorityColor(t.priority)
+                                      .withOpacity(0.3),
+                                  offset: const Offset(2, 2),
+                                  blurRadius: 4,
+                                  spreadRadius: 0,
+                                ),
+                                const BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-2, -2),
+                                  blurRadius: 4,
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              t.priority ?? 'Medium',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _getPriorityColor(t.priority),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Reminder indicator
+                          if (t.reminderDate != null) ...[
+                            Icon(
+                              Icons.notifications_outlined,
+                              size: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${t.reminderDate!.day}/${t.reminderDate!.month}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(width: 8),
+                          // Completed timestamp for completed tasks
+                          if (isCompleted && t.updatedAt != null) ...[
+                            Icon(
+                              Icons.check_circle_outline,
+                              size: 16,
+                              color: Colors.green.shade600,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Completed on ${t.updatedAt!.day}/${t.updatedAt!.month}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.green.shade600,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          // Action buttons
+                          if (!isCompleted) ...[
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE6EBEF),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0xFFBEC8D1),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.white,
+                                    offset: Offset(-2, -2),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/add_edit_todo',
+                                      arguments: t),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.edit_outlined,
+                                      size: 18,
+                                      color: Color(0xFF7C8BA0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(width: 8),
+
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE6EBEF),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0xFFBEC8D1),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                ),
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-2, -2),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(10),
+                                onTap: () {
+                                  if (isCompleted) {
+                                    // Restore to ongoing
+                                    context
+                                        .read<TodoBloc>()
+                                        .add(TodoUpdateRequested(
+                                          t.copyWith(isCompleted: false),
+                                        ));
+                                  } else {
+                                    // Delete task
+                                    context
+                                        .read<TodoBloc>()
+                                        .add(TodoDeleteRequested(t.id!));
+                                  }
+                                },
+                                child: Center(
+                                  child: Icon(
+                                    isCompleted
+                                        ? Icons.restore
+                                        : Icons.delete_outline,
+                                    size: 18,
+                                    color:
+                                        isCompleted ? Colors.blue : Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  if (t.description?.isNotEmpty == true) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      t.description!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isCompleted ? Colors.grey : Colors.grey.shade600,
-                        decoration:
-                            isCompleted ? TextDecoration.lineThrough : null,
-                      ),
-                    ),
-                  ],
-                  // const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      // Priority label
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getPriorityColor(t.priority).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          t.priority ?? 'Medium',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getPriorityColor(t.priority),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Reminder indicator
-                      if (t.reminderDate != null) ...[
-                        Icon(
-                          Icons.notifications_outlined,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${t.reminderDate!.day}/${t.reminderDate!.month}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(width: 8),
-                      // Completed timestamp for completed tasks
-                      if (isCompleted && t.updatedAt != null) ...[
-                        Icon(
-                          Icons.check_circle_outline,
-                          size: 16,
-                          color: Colors.green.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Completed on ${t.updatedAt!.day}/${t.updatedAt!.month}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.green.shade600,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
-                      // Action buttons
-                      if (!isCompleted) ...[
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () => Navigator.pushNamed(
-                              context, '/add_edit_todo',
-                              arguments: t),
-                        ),
-                      ],
-                      IconButton(
-                        icon: Icon(
-                          isCompleted ? Icons.restore : Icons.delete_outline,
-                          size: 20,
-                          color: isCompleted ? Colors.blue : Colors.red,
-                        ),
-                        onPressed: () {
-                          if (isCompleted) {
-                            // Restore to ongoing
-                            context.read<TodoBloc>().add(TodoUpdateRequested(
-                                  t.copyWith(isCompleted: false),
-                                ));
-                          } else {
-                            // Delete task
-                            context
-                                .read<TodoBloc>()
-                                .add(TodoDeleteRequested(t.id!));
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

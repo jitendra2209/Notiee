@@ -73,7 +73,9 @@ class _MainNavigationPageState extends State<MainNavigationPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE6EBEF),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFE6EBEF),
         title: Text(
           _getAppBarTitle(),
           style: const TextStyle(

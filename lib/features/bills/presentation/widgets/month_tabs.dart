@@ -88,12 +88,40 @@ class _MonthTabsState extends State<MonthTabs>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                onPressed: () => _changeYear(false),
-                icon: const Icon(Icons.chevron_left),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.grey.shade100,
-                  foregroundColor: Colors.grey.shade700,
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EBEF),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0xFFBEC8D1),
+                      offset: Offset(4, 4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(-4, -4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _changeYear(false),
+                    child: Center(
+                      child: Icon(
+                        Icons.chevron_left,
+                        color: Colors.redAccent.shade100,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Text(
@@ -101,14 +129,43 @@ class _MonthTabsState extends State<MonthTabs>
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
+                  color: Color(0xFF2E3A4B),
                 ),
               ),
-              IconButton(
-                onPressed: () => _changeYear(true),
-                icon: const Icon(Icons.chevron_right),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.grey.shade100,
-                  foregroundColor: Colors.grey.shade700,
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EBEF),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0xFFBEC8D1),
+                      offset: Offset(4, 4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(-4, -4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _changeYear(true),
+                    child: Center(
+                      child: Icon(
+                        Icons.chevron_right,
+                        color: Colors.redAccent.shade100,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -118,8 +175,22 @@ class _MonthTabsState extends State<MonthTabs>
         Container(
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            color: const Color(0xFFE6EBEF),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0xFFBEC8D1),
+                offset: Offset(6, 6),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(-6, -6),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           margin: const EdgeInsets.symmetric(horizontal: 16),
           child: TabBar(
@@ -128,11 +199,23 @@ class _MonthTabsState extends State<MonthTabs>
             isScrollable: true,
             indicatorSize: TabBarIndicatorSize.tab,
             indicator: BoxDecoration(
-              color: Colors.redAccent.shade100,
-              borderRadius: BorderRadius.circular(6),
+              gradient: LinearGradient(
+                colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.shade100.withOpacity(0.5),
+                  offset: const Offset(0, 4),
+                  blurRadius: 10,
+                  spreadRadius: -2,
+                ),
+              ],
             ),
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey.shade600,
+            unselectedLabelColor: const Color(0xFF7C8BA0),
             labelStyle: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 12,

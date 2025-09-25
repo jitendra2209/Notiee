@@ -33,6 +33,8 @@ Future<void> main() async {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
   ));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const NotieeApp());
 }
 
@@ -61,7 +63,8 @@ class NotieeApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+        theme: ThemeData(
+            useMaterial3: true, colorSchemeSeed: Colors.redAccent.shade100),
         initialRoute: '/',
         routes: {
           '/': (_) => const SplashScreen(),

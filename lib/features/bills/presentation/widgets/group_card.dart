@@ -22,9 +22,22 @@ class GroupCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.redAccent.shade100),
+        color: const Color(0xFFE6EBEF),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0xFFBEC8D1),
+            offset: Offset(6, 6),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-6, -6),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: InkWell(
         onTap: onTap,
@@ -44,43 +57,71 @@ class GroupCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF2E3A4B),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // if (isCreator)
-                  PopupMenuButton<String>(
-                    color: Colors.white,
-                    onSelected: (value) {
-                      if (value == 'edit' && onEdit != null) {
-                        onEdit!();
-                      } else if (value == 'delete' && onDelete != null) {
-                        onDelete!();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 18),
-                            SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6EBEF),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0xFFBEC8D1),
+                          offset: Offset(2, 2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 18, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
+                        BoxShadow(
+                          color: Colors.white,
+                          offset: Offset(-2, -2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         ),
+                      ],
+                    ),
+                    child: PopupMenuButton<String>(
+                      color: const Color(0xFFE6EBEF),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Color(0xFF7C8BA0),
                       ),
-                    ],
+                      onSelected: (value) {
+                        if (value == 'edit' && onEdit != null) {
+                          onEdit!();
+                        } else if (value == 'delete' && onDelete != null) {
+                          onDelete!();
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, size: 18),
+                              SizedBox(width: 8),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, size: 18, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -90,9 +131,9 @@ class GroupCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   group.description,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: Colors.grey.shade600,
+                    color: Color(0xFF7C8BA0),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -107,23 +148,23 @@ class GroupCard extends StatelessWidget {
                   Icon(
                     Icons.people,
                     size: 16,
-                    color: Colors.grey.shade600,
+                    color: Colors.redAccent.shade100,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${group.members.length} members',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
+                      color: Color(0xFF7C8BA0),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     _formatDate(group.createdAt),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade500,
+                      color: Color(0xFF9EA8B5),
                     ),
                   ),
                 ],
@@ -146,8 +187,22 @@ class GroupCard extends StatelessWidget {
                           height: 32,
                           margin: const EdgeInsets.only(right: 4),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: const Color(0xFFE6EBEF),
                             shape: BoxShape.circle,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0xFFBEC8D1),
+                                offset: Offset(2, 2),
+                                blurRadius: 4,
+                                spreadRadius: 0,
+                              ),
+                              BoxShadow(
+                                color: Colors.white,
+                                offset: Offset(-2, -2),
+                                blurRadius: 4,
+                                spreadRadius: 0,
+                              ),
+                            ],
                           ),
                           child: Center(
                             child: Text(
@@ -155,6 +210,7 @@ class GroupCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
+                                color: Color(0xFF7C8BA0),
                               ),
                             ),
                           ),
@@ -169,6 +225,15 @@ class GroupCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: _getAvatarColor(member.displayName),
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: _getAvatarColor(member.displayName)
+                                  .withOpacity(0.5),
+                              offset: const Offset(2, 2),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: Text(

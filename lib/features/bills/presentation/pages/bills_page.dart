@@ -92,25 +92,83 @@ class _BillsPageState extends State<BillsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Group'),
-        content: Text('Are you sure you want to delete "${group.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+        backgroundColor: const Color(0xFFE6EBEF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Delete Group',
+          style: TextStyle(
+            color: Colors.redAccent.shade100,
+            fontWeight: FontWeight.w600,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              final authState = context.read<AuthBloc>().state;
-              if (authState.user?.uid != null) {
-                context.read<BillBloc>().add(
-                      DeleteGroup(group.id, authState.user!.uid!),
-                    );
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${group.name}"?',
+          style: const TextStyle(
+            color: Color(0xFF2E3A4B),
+          ),
+        ),
+        actions: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF7C8BA0)),
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6EBEF),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                final authState = context.read<AuthBloc>().state;
+                if (authState.user?.uid != null) {
+                  context.read<BillBloc>().add(
+                        DeleteGroup(group.id, authState.user!.uid!),
+                      );
+                }
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
           ),
         ],
       ),
@@ -143,7 +201,7 @@ class _BillsPageState extends State<BillsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFFE6EBEF),
       body: BlocListener<BillBloc, BillState>(
         listener: (context, state) {
           if (state is GroupsLoadedByMonth) {
@@ -210,11 +268,47 @@ class _BillsPageState extends State<BillsPage> {
         ),
       ),
       floatingActionButton: _currentGroups.isNotEmpty
-          ? FloatingActionButton.small(
-              onPressed: _createGroup,
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.redAccent.shade100,
-              child: const Icon(Icons.add),
+          ? Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6EBEF),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.redAccent.shade100.withOpacity(0.3),
+                    offset: const Offset(0, 8),
+                    blurRadius: 20,
+                    spreadRadius: -4,
+                  ),
+                  const BoxShadow(
+                    color: Color(0xFFBEC8D1),
+                    offset: Offset(8, 8),
+                    blurRadius: 15,
+                    spreadRadius: 1,
+                  ),
+                  const BoxShadow(
+                    color: Colors.white,
+                    offset: Offset(-8, -8),
+                    blurRadius: 15,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: _createGroup,
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.redAccent.shade100,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
             )
           : null,
     );
@@ -235,29 +329,72 @@ class _BillsPageState extends State<BillsPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.black,
+              color: Color(0xFF2E3A4B),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first group for ${_getMonthName(_selectedMonth)}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey.shade600,
+              color: Color(0xFF7C8BA0),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: _createGroup,
-            icon: const Icon(Icons.add),
-            label: const Text('Create Group'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent.shade100,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.shade100.withOpacity(0.5),
+                  offset: const Offset(0, 8),
+                  blurRadius: 20,
+                  spreadRadius: -4,
+                ),
+                const BoxShadow(
+                  color: Color(0xFFBEC8D1),
+                  offset: Offset(8, 8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+                const BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-8, -8),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: _createGroup,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text(
+                        'Create Group',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
