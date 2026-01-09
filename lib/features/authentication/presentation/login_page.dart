@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import 'package:notiee/core/utils/icon_path.dart';
 import '../application/bloc/auth_bloc.dart';
 import '../application/bloc/auth_event.dart';
@@ -67,20 +68,6 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6EBEF),
                         shape: BoxShape.circle,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0xFFBEC8D1),
-                            offset: Offset(8, 8),
-                            blurRadius: 15,
-                            spreadRadius: 1,
-                          ),
-                          BoxShadow(
-                            color: Colors.white,
-                            offset: Offset(-8, -8),
-                            blurRadius: 15,
-                            spreadRadius: 1,
-                          ),
-                        ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -130,37 +117,25 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: _obscurePassword,
                     onSubmitted: () => _submit(context),
                     suffixIcon: Container(
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE6EBEF),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0xFFBEC8D1),
-                            offset: Offset(2, 2),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                          BoxShadow(
-                            color: Colors.white,
-                            offset: Offset(-2, -2),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword),
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_rounded
-                              : Icons.visibility_off_rounded,
-                          color: const Color(0xFF7C8BA0),
-                          size: 20,
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE6EBEF),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ),
-                    ),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          child: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
+                            color: const Color(0xFF7C8BA0),
+                            size: 20,
+                          ),
+                        )),
                   ),
                   const SizedBox(height: 24),
                   BlocBuilder<AuthBloc, AuthState>(
@@ -170,22 +145,11 @@ class _LoginPageState extends State<LoginPage> {
                         height: 56,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.redAccent.shade100,
-                              Colors.redAccent.shade200
-                            ],
+                            colors: [AppColors.primary, AppColors.primaryDark],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.redAccent.shade100,
-                              offset: const Offset(0, 4),
-                              blurRadius: 15,
-                              spreadRadius: -3,
-                            ),
-                          ],
                         ),
                         child: Material(
                           color: Colors.transparent,
@@ -234,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           'Create one',
                           style: TextStyle(
-                            color: Colors.redAccent.shade100,
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -275,25 +239,16 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(4, 4),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-4, -4),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-        ],
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+        ),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        cursorColor: AppColors.primary,
         onSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
         style: const TextStyle(
           color: Color(0xFF2D3748),
@@ -305,18 +260,18 @@ class _LoginPageState extends State<LoginPage> {
           hintText: hint,
           prefixIcon: Icon(
             icon,
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             size: 20,
           ),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
-          labelStyle: const TextStyle(
-            color: Color(0xFF7C8BA0),
+          contentPadding: EdgeInsets.zero,
+          labelStyle: TextStyle(
+            color: AppColors.border,
             fontSize: 14,
           ),
-          hintStyle: const TextStyle(
-            color: Color(0xFF9CA3AF),
+          hintStyle: TextStyle(
+            color: AppColors.border,
             fontSize: 14,
           ),
         ),

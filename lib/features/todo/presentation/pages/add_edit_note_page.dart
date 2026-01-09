@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../application/note_bloc/note_bloc.dart';
 import '../../application/note_bloc/note_event.dart';
 import '../../domain/models/note_model.dart';
@@ -69,20 +70,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(8, 8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-8, -8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: child,
     );
@@ -108,7 +95,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
           labelText: label,
           hintText: hint,
           labelStyle: TextStyle(
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -155,20 +142,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -182,9 +155,8 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 child: Center(
                   child: Icon(
                     _isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                    color: _isPinned
-                        ? Colors.redAccent.shade100
-                        : const Color(0xFF7C8BA0),
+                    color:
+                        _isPinned ? AppColors.primary : const Color(0xFF7C8BA0),
                     size: 20,
                   ),
                 ),
@@ -199,20 +171,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -275,7 +233,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.redAccent.shade100,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -291,21 +249,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFE6EBEF),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  selectedColorData['color'].withOpacity(0.3),
-                              offset: const Offset(2, 2),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                            const BoxShadow(
-                              color: Colors.white,
-                              offset: Offset(-2, -2),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -370,20 +313,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6EBEF),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0xFFBEC8D1),
-                      offset: Offset(2, 2),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(-2, -2),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                  ],
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -413,31 +342,11 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+          colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.redAccent.shade100.withOpacity(0.5),
-            offset: const Offset(0, 8),
-            blurRadius: 20,
-            spreadRadius: -4,
-          ),
-          const BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(8, 8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-          const BoxShadow(
-            color: Colors.white,
-            offset: Offset(-8, -8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -489,7 +398,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.redAccent.shade100,
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 20),
@@ -514,22 +423,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFE6EBEF),
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: isSelected
-                                  ? colorData['color'].withOpacity(0.5)
-                                  : const Color(0xFFBEC8D1),
-                              offset: const Offset(4, 4),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                            ),
-                            const BoxShadow(
-                              color: Colors.white,
-                              offset: Offset(-4, -4),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                            ),
-                          ],
                         ),
                         child: Center(
                           child: Container(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../domain/models/todo_model.dart';
 import '../../application/todo_bloc/todo_bloc.dart';
 import '../../application/todo_bloc/todo_event.dart';
@@ -70,20 +71,6 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(8, 8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-8, -8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: child,
     );
@@ -109,7 +96,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
           labelText: label,
           hintText: hint,
           labelStyle: TextStyle(
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -193,7 +180,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.redAccent.shade100,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -284,7 +271,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.redAccent.shade100,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -298,26 +285,12 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6EBEF),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0xFFBEC8D1),
-                          offset: Offset(4, 4),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                        BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(-4, -4),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ],
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.calendar_month_outlined,
-                          color: Colors.redAccent.shade100,
+                          color: AppColors.primary,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -347,26 +320,12 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6EBEF),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0xFFBEC8D1),
-                          offset: Offset(4, 4),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                        BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(-4, -4),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ],
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.access_time,
-                          color: Colors.redAccent.shade100,
+                          color: AppColors.primary,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -400,31 +359,11 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
       height: 56,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+          colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.redAccent.shade100.withOpacity(0.5),
-            offset: const Offset(0, 8),
-            blurRadius: 20,
-            spreadRadius: -4,
-          ),
-          const BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(8, 8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-          const BoxShadow(
-            color: Colors.white,
-            offset: Offset(-8, -8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -488,7 +427,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.redAccent.shade100,
+              primary: AppColors.primary,
             ),
           ),
           child: child!,
@@ -510,7 +449,7 @@ class _AddEditTodoPageState extends State<AddEditTodoPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.redAccent.shade100,
+              primary: AppColors.primary,
             ),
           ),
           child: child!,

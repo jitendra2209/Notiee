@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../application/note_bloc/note_bloc.dart';
 import '../../application/note_bloc/note_event.dart';
 import '../../domain/models/note_model.dart';
@@ -142,22 +143,6 @@ class NotesListContent extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFE6EBEF),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: note.isPinned == true
-                  ? color.withOpacity(0.3)
-                  : const Color(0xFFBEC8D1),
-              offset: const Offset(6, 6),
-              blurRadius: 12,
-              spreadRadius: 1,
-            ),
-            const BoxShadow(
-              color: Colors.white,
-              offset: Offset(-6, -6),
-              blurRadius: 12,
-              spreadRadius: 1,
-            ),
-          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -187,20 +172,6 @@ class NotesListContent extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6EBEF),
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0xFFBEC8D1),
-                          offset: Offset(2, 2),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                        BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(-2, -2),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                      ],
                     ),
                     child: PopupMenuButton<String>(
                       color: const Color(0xFFE6EBEF),
@@ -294,20 +265,6 @@ class NotesListContent extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: const Color(0xFFE6EBEF),
                               borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: color.withOpacity(0.3),
-                                  offset: const Offset(1, 1),
-                                  blurRadius: 2,
-                                  spreadRadius: 0,
-                                ),
-                                const BoxShadow(
-                                  color: Colors.white,
-                                  offset: Offset(-1, -1),
-                                  blurRadius: 2,
-                                  spreadRadius: 0,
-                                ),
-                              ],
                             ),
                             child: Text(
                               '#$tag',
@@ -359,7 +316,7 @@ class NotesListContent extends StatelessWidget {
         title: Text(
           'Delete Note',
           style: TextStyle(
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -374,20 +331,6 @@ class NotesListContent extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: TextButton(
               onPressed: () => Navigator.pop(context),
@@ -401,20 +344,6 @@ class NotesListContent extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: TextButton(
               onPressed: () {

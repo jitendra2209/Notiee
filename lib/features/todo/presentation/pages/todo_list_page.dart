@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../application/todo_bloc/todo_bloc.dart';
 import '../../application/todo_bloc/todo_event.dart';
 import '../../application/todo_bloc/todo_state.dart';
@@ -51,42 +52,17 @@ class _TodoListPageState extends State<TodoListPage>
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(25),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(8, 8),
-                  blurRadius: 15,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-8, -8),
-                  blurRadius: 15,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: TabBar(
               controller: _tabController,
               indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.redAccent.shade100,
-                    Colors.redAccent.shade200
-                  ],
+                  colors: [AppColors.primary, AppColors.primaryDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.redAccent.shade100.withOpacity(0.5),
-                    offset: const Offset(0, 4),
-                    blurRadius: 10,
-                    spreadRadius: -2,
-                  ),
-                ],
               ),
               labelColor: Colors.white,
               unselectedLabelColor: const Color(0xFF7C8BA0),
@@ -190,22 +166,8 @@ class _TodoListPageState extends State<TodoListPage>
         return Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFE6EBEF),
+              // color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(6, 6),
-                  blurRadius: 12,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-6, -6),
-                  blurRadius: 12,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Container(
               margin: const EdgeInsets.only(left: 4),
@@ -258,23 +220,6 @@ class _TodoListPageState extends State<TodoListPage>
                               decoration: BoxDecoration(
                                 color: const Color(0xFFE6EBEF),
                                 borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: (t.isCompleted ?? false)
-                                        ? Colors.redAccent.shade100
-                                            .withOpacity(0.3)
-                                        : const Color(0xFFBEC8D1),
-                                    offset: const Offset(2, 2),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                  const BoxShadow(
-                                    color: Colors.white,
-                                    offset: Offset(-2, -2),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
                               ),
                               child: Material(
                                 color: Colors.transparent,
@@ -324,21 +269,6 @@ class _TodoListPageState extends State<TodoListPage>
                             decoration: BoxDecoration(
                               color: const Color(0xFFE6EBEF),
                               borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _getPriorityColor(t.priority)
-                                      .withOpacity(0.3),
-                                  offset: const Offset(2, 2),
-                                  blurRadius: 4,
-                                  spreadRadius: 0,
-                                ),
-                                const BoxShadow(
-                                  color: Colors.white,
-                                  offset: Offset(-2, -2),
-                                  blurRadius: 4,
-                                  spreadRadius: 0,
-                                ),
-                              ],
                             ),
                             child: Text(
                               t.priority ?? 'Medium',
@@ -392,20 +322,6 @@ class _TodoListPageState extends State<TodoListPage>
                               decoration: BoxDecoration(
                                 color: const Color(0xFFE6EBEF),
                                 borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0xFFBEC8D1),
-                                    offset: Offset(2, 2),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.white,
-                                    offset: Offset(-2, -2),
-                                    blurRadius: 4,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
                               ),
                               child: Material(
                                 color: Colors.transparent,
@@ -433,20 +349,6 @@ class _TodoListPageState extends State<TodoListPage>
                             decoration: BoxDecoration(
                               color: const Color(0xFFE6EBEF),
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0xFFBEC8D1),
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
-                                  spreadRadius: 1,
-                                ),
-                                BoxShadow(
-                                  color: Colors.white,
-                                  offset: Offset(-2, -2),
-                                  blurRadius: 4,
-                                  spreadRadius: 1,
-                                ),
-                              ],
                             ),
                             child: Material(
                               color: Colors.transparent,

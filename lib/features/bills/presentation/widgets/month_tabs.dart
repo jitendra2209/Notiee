@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 
 class MonthTabs extends StatefulWidget {
   final int selectedMonth;
@@ -94,20 +95,6 @@ class _MonthTabsState extends State<MonthTabs>
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6EBEF),
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0xFFBEC8D1),
-                      offset: Offset(4, 4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(-4, -4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -117,7 +104,7 @@ class _MonthTabsState extends State<MonthTabs>
                     child: Center(
                       child: Icon(
                         Icons.chevron_left,
-                        color: Colors.redAccent.shade100,
+                        color: AppColors.primary,
                         size: 20,
                       ),
                     ),
@@ -138,20 +125,6 @@ class _MonthTabsState extends State<MonthTabs>
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6EBEF),
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0xFFBEC8D1),
-                      offset: Offset(4, 4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(-4, -4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -161,7 +134,7 @@ class _MonthTabsState extends State<MonthTabs>
                     child: Center(
                       child: Icon(
                         Icons.chevron_right,
-                        color: Colors.redAccent.shade100,
+                        color: AppColors.primary,
                         size: 20,
                       ),
                     ),
@@ -177,20 +150,6 @@ class _MonthTabsState extends State<MonthTabs>
           decoration: BoxDecoration(
             color: const Color(0xFFE6EBEF),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0xFFBEC8D1),
-                offset: Offset(6, 6),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-              BoxShadow(
-                color: Colors.white,
-                offset: Offset(-6, -6),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-            ],
           ),
           margin: const EdgeInsets.symmetric(horizontal: 16),
           child: TabBar(
@@ -200,19 +159,11 @@ class _MonthTabsState extends State<MonthTabs>
             indicatorSize: TabBarIndicatorSize.tab,
             indicator: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+                colors: [AppColors.primary, AppColors.primaryDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.redAccent.shade100.withOpacity(0.5),
-                  offset: const Offset(0, 4),
-                  blurRadius: 10,
-                  spreadRadius: -2,
-                ),
-              ],
             ),
             labelColor: Colors.white,
             unselectedLabelColor: const Color(0xFF7C8BA0),

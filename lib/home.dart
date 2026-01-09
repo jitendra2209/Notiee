@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import 'package:notiee/core/utils/icon_path.dart';
 import 'features/todo/presentation/pages/todo_list_page.dart';
 import 'features/bills/presentation/pages/bills_page.dart';
@@ -91,7 +92,7 @@ class _MainNavigationPageState extends State<MainNavigationPage>
               width: 35,
               height: 35,
               decoration: BoxDecoration(
-                color: Colors.redAccent.shade100,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -129,7 +130,7 @@ class _MainNavigationPageState extends State<MainNavigationPage>
           margin: const EdgeInsets.only(left: 80, right: 80, bottom: 16),
           height: 50,
           decoration: BoxDecoration(
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(30),
           ),
           child:
@@ -168,7 +169,7 @@ class _MainNavigationPageState extends State<MainNavigationPage>
     return FloatingActionButton.small(
       onPressed: _toggleFab,
       backgroundColor: Colors.white,
-      foregroundColor: Colors.redAccent.shade100,
+      foregroundColor: AppColors.primaryDark,
       elevation: 4,
       child: AnimatedBuilder(
         animation: _fabAnimation,
@@ -249,7 +250,7 @@ class _MainNavigationPageState extends State<MainNavigationPage>
               child: Text(
                 label,
                 style: TextStyle(
-                  color: Colors.redAccent.shade100,
+                  color: AppColors.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -262,17 +263,10 @@ class _MainNavigationPageState extends State<MainNavigationPage>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Icon(
                 icon,
-                color: Colors.redAccent.shade100,
+                color: AppColors.primary,
                 size: 24,
               ),
             ),
@@ -304,14 +298,16 @@ class _MainNavigationPageState extends State<MainNavigationPage>
           children: [
             SvgPicture.asset(
               icon,
-              color: isSelected ? Colors.redAccent.shade100 : Colors.white,
+              colorFilter: isSelected
+                  ? ColorFilter.mode(AppColors.primary, BlendMode.srcIn)
+                  : const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             if (isSelected) ...[
               const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.redAccent.shade100,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../application/bloc/auth_bloc.dart';
 import '../application/bloc/auth_event.dart';
 import '../application/bloc/auth_state.dart';
@@ -113,37 +114,25 @@ class _SignupPageState extends State<SignupPage> {
                       obscureText: _obscurePassword,
                       onSubmitted: () => _submit(context),
                       suffixIcon: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE6EBEF),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0xFFBEC8D1),
-                              offset: Offset(2, 2),
-                              blurRadius: 4,
-                              spreadRadius: 1,
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: Offset(-2, -2),
-                              blurRadius: 4,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_rounded
-                                : Icons.visibility_off_rounded,
-                            color: const Color(0xFF7C8BA0),
-                            size: 20,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE6EBEF),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                      ),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                            child: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_rounded
+                                  : Icons.visibility_off_rounded,
+                              color: const Color(0xFF7C8BA0),
+                              size: 20,
+                            ),
+                          )),
                     ),
                     const SizedBox(height: 24),
                     BlocBuilder<AuthBloc, AuthState>(
@@ -154,21 +143,13 @@ class _SignupPageState extends State<SignupPage> {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.redAccent.shade100,
-                                Colors.redAccent.shade200
+                                AppColors.primary,
+                                AppColors.primaryDark,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.redAccent.shade100,
-                                offset: const Offset(0, 4),
-                                blurRadius: 15,
-                                spreadRadius: -3,
-                              ),
-                            ],
                           ),
                           child: Material(
                             color: Colors.transparent,
@@ -219,7 +200,7 @@ class _SignupPageState extends State<SignupPage> {
                           child: Text(
                             'Log in',
                             style: TextStyle(
-                              color: Colors.redAccent.shade100,
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -265,25 +246,16 @@ class _SignupPageState extends State<SignupPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(4, 4),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-4, -4),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-        ],
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+        ),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        cursorColor: AppColors.primary,
         onSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
         style: const TextStyle(
           color: Color(0xFF2D3748),
@@ -294,12 +266,12 @@ class _SignupPageState extends State<SignupPage> {
           labelText: label,
           prefixIcon: Icon(
             icon,
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             size: 20,
           ),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: EdgeInsets.zero,
           labelStyle: const TextStyle(
             color: Color(0xFF7C8BA0),
             fontSize: 14,

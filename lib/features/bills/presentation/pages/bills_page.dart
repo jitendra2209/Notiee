@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import 'package:notiee/core/utils/icon_path.dart';
 import '../../../authentication/application/bloc/auth_bloc.dart';
 import '../../application/bloc/bill_bloc.dart';
@@ -97,7 +98,7 @@ class _BillsPageState extends State<BillsPage> {
         title: Text(
           'Delete Group',
           style: TextStyle(
-            color: Colors.redAccent.shade100,
+            color: AppColors.primary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -112,20 +113,6 @@ class _BillsPageState extends State<BillsPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: TextButton(
               onPressed: () => Navigator.pop(context),
@@ -139,20 +126,6 @@ class _BillsPageState extends State<BillsPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: TextButton(
               onPressed: () {
@@ -274,26 +247,6 @@ class _BillsPageState extends State<BillsPage> {
               decoration: BoxDecoration(
                 color: const Color(0xFFE6EBEF),
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.redAccent.shade100.withOpacity(0.3),
-                    offset: const Offset(0, 8),
-                    blurRadius: 20,
-                    spreadRadius: -4,
-                  ),
-                  const BoxShadow(
-                    color: Color(0xFFBEC8D1),
-                    offset: Offset(8, 8),
-                    blurRadius: 15,
-                    spreadRadius: 1,
-                  ),
-                  const BoxShadow(
-                    color: Colors.white,
-                    offset: Offset(-8, -8),
-                    blurRadius: 15,
-                    spreadRadius: 1,
-                  ),
-                ],
               ),
               child: Material(
                 color: Colors.transparent,
@@ -303,7 +256,7 @@ class _BillsPageState extends State<BillsPage> {
                   child: Center(
                     child: Icon(
                       Icons.add,
-                      color: Colors.redAccent.shade100,
+                      color: AppColors.primary,
                       size: 24,
                     ),
                   ),
@@ -345,31 +298,11 @@ class _BillsPageState extends State<BillsPage> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+                colors: [AppColors.primary, AppColors.primaryDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.redAccent.shade100.withOpacity(0.5),
-                  offset: const Offset(0, 8),
-                  blurRadius: 20,
-                  spreadRadius: -4,
-                ),
-                const BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(8, 8),
-                  blurRadius: 15,
-                  spreadRadius: 1,
-                ),
-                const BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-8, -8),
-                  blurRadius: 15,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,

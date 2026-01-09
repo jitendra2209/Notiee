@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../domain/models/group_model.dart';
 
 class GroupCard extends StatelessWidget {
@@ -24,20 +25,6 @@ class GroupCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(6, 6),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-6, -6),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: InkWell(
         onTap: onTap,
@@ -69,20 +56,6 @@ class GroupCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xFFE6EBEF),
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0xFFBEC8D1),
-                          offset: Offset(2, 2),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                        BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(-2, -2),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                      ],
                     ),
                     child: PopupMenuButton<String>(
                       color: const Color(0xFFE6EBEF),
@@ -148,7 +121,7 @@ class GroupCard extends StatelessWidget {
                   Icon(
                     Icons.people,
                     size: 16,
-                    color: Colors.redAccent.shade100,
+                    color: AppColors.primary,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -189,20 +162,6 @@ class GroupCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color(0xFFE6EBEF),
                             shape: BoxShape.circle,
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0xFFBEC8D1),
-                                offset: Offset(2, 2),
-                                blurRadius: 4,
-                                spreadRadius: 0,
-                              ),
-                              BoxShadow(
-                                color: Colors.white,
-                                offset: Offset(-2, -2),
-                                blurRadius: 4,
-                                spreadRadius: 0,
-                              ),
-                            ],
                           ),
                           child: Center(
                             child: Text(
@@ -225,15 +184,6 @@ class GroupCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: _getAvatarColor(member.displayName),
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: _getAvatarColor(member.displayName)
-                                  .withOpacity(0.5),
-                              offset: const Offset(2, 2),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
                         ),
                         child: Center(
                           child: Text(

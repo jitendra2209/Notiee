@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import '../../../authentication/application/bloc/auth_bloc.dart';
 import '../../application/bloc/bill_bloc.dart';
 import '../../domain/models/contact_model.dart';
@@ -219,20 +220,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFE6EBEF),
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0xFFBEC8D1),
-            offset: Offset(8, 8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-8, -8),
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
       ),
       child: child,
     );
@@ -278,20 +265,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6EBEF),
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0xFFBEC8D1),
-                      offset: Offset(4, 4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(-4, -4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
                 ),
                 child: TextField(
                   controller: _searchController,
@@ -324,20 +297,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFE6EBEF),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFFBEC8D1),
-                  offset: Offset(4, 4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4, -4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -347,7 +306,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 child: Center(
                   child: Icon(
                     _isSearching ? Icons.close : Icons.search,
-                    color: Colors.redAccent.shade100,
+                    color: AppColors.primary,
                     size: 20,
                   ),
                 ),
@@ -394,7 +353,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       'Creating group for',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.redAccent.shade100,
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -480,20 +439,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFE6EBEF),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.redAccent.shade100.withOpacity(0.3),
-                              offset: const Offset(2, 2),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                            const BoxShadow(
-                              color: Colors.white,
-                              offset: Offset(-2, -2),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -502,7 +447,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               contact.displayName,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.redAccent.shade100,
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -512,7 +457,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               child: Icon(
                                 Icons.close,
                                 size: 14,
-                                color: Colors.redAccent.shade100,
+                                color: AppColors.primary,
                               ),
                             ),
                           ],
@@ -567,22 +512,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                           decoration: BoxDecoration(
                             color: const Color(0xFFE6EBEF),
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: isSelected
-                                    ? Colors.redAccent.shade100.withOpacity(0.3)
-                                    : const Color(0xFFBEC8D1),
-                                offset: const Offset(4, 4),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                              const BoxShadow(
-                                color: Colors.white,
-                                offset: Offset(-4, -4),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ],
                           ),
                           child: ListTile(
                             leading: Container(
@@ -591,15 +520,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               decoration: BoxDecoration(
                                 color: _getAvatarColor(contact.displayName),
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _getAvatarColor(contact.displayName)
-                                        .withOpacity(0.5),
-                                    offset: const Offset(2, 2),
-                                    blurRadius: 4,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
                               ),
                               child: Center(
                                 child: Text(
@@ -644,26 +564,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               height: 24,
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Colors.redAccent.shade100
+                                    ? AppColors.primary
                                     : const Color(0xFFE6EBEF),
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: isSelected
-                                        ? Colors.redAccent.shade100
-                                            .withOpacity(0.5)
-                                        : const Color(0xFFBEC8D1),
-                                    offset: const Offset(2, 2),
-                                    blurRadius: 4,
-                                    spreadRadius: 0,
-                                  ),
-                                  const BoxShadow(
-                                    color: Colors.white,
-                                    offset: Offset(-2, -2),
-                                    blurRadius: 4,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
                               ),
                               child: Center(
                                 child: isSelected
@@ -694,31 +597,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           height: 56,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.redAccent.shade100, Colors.redAccent.shade200],
+              colors: [AppColors.primary, AppColors.primaryDark],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.redAccent.shade100.withOpacity(0.5),
-                offset: const Offset(0, 8),
-                blurRadius: 20,
-                spreadRadius: -4,
-              ),
-              const BoxShadow(
-                color: Color(0xFFBEC8D1),
-                offset: Offset(8, 8),
-                blurRadius: 15,
-                spreadRadius: 1,
-              ),
-              const BoxShadow(
-                color: Colors.white,
-                offset: Offset(-8, -8),
-                blurRadius: 15,
-                spreadRadius: 1,
-              ),
-            ],
           ),
           child: Material(
             color: Colors.transparent,

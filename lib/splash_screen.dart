@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notiee/core/utils/app_colors.dart';
 import 'package:notiee/core/utils/icon_path.dart';
 
 import 'features/authentication/application/bloc/auth_bloc.dart';
@@ -126,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.redAccent.shade100,
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(height: 8),
